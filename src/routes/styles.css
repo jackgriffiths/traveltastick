@@ -1,0 +1,62 @@
+@layer reset, typography;
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+  }
+
+  img,
+  picture,
+  svg,
+  video {
+    display: block;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+  }
+}
+
+@layer typography {
+  :root {
+    --ff-normal: system-ui;
+    --fw-normal: 400;
+    --fw-bold: 700;
+    --readable-text-max-inline-size: 70ch;
+  }
+
+  body {
+    @media (prefers-color-scheme: light) {
+      --body-background-color: hsl(203, 66%, 82%);
+      --body-text-color: hsl(0, 0%, 10%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --body-background-color: hsl(203, 60%, 14%);
+      --body-text-color: hsl(0, 0%, 86%);
+    }
+
+    background: var(--body-background-color);
+    color: var(--body-text-color);
+    font-family: var(--ff-normal);
+    font-weight: var(--fw-normal);
+  }
+
+  p {
+    --paragraph-line-height: 1.5;
+    --paragraph-spacing: 1em;
+
+    line-height: var(--paragraph-line-height);
+    max-inline-size: var(--readable-text-max-inline-size);
+
+    & + p {
+      margin-block-start: var(--paragraph-spacing);
+    }
+  }
+}
