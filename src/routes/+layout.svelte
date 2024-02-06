@@ -4,6 +4,8 @@
 
 <div class="wrapper">
   <nav>
+    <a href="/">Album</a>
+    <a href="/deck">Deck</a>
   </nav>
 
   <main>
@@ -12,6 +14,13 @@
 </div>
 
 <style>
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-block-end: 2rem;
+  }
+
   .wrapper {
     max-inline-size: 1000px;
     margin-inline: auto;
