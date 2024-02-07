@@ -16,6 +16,10 @@
         <h2>{sticker.title}</h2>
         <p>{sticker.location}</p>
       </div>
+      <form method="post" action="?/addToAlbum">
+        <input type="hidden" name="ownedStickerId" value={sticker.ownedStickerId} />
+        <button type="submit">Add to Album</button>
+      </form>
     </section>
   {/each}
 </div>
