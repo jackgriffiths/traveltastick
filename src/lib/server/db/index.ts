@@ -1,4 +1,4 @@
-import { asc, eq, and } from "drizzle-orm";
+import { asc, eq, and, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { DB_CONNECTION_STRING } from "$env/static/private";
@@ -21,6 +21,30 @@ export const getStickers = async () => {
   });
 }
 
+export const getStickersByIds = async (ids: number[]) => {
+  return await db.query.stickers.findMany({
+    columns: {
+      stickerId: true,
+      number: true,
+      title: true,
+      location: true,
+      imageUrl: true,
+    },
+    where: () => inArray(schema.stickers.stickerId, ids),
+    orderBy: [asc(schema.stickers.number)]
+  });
+}
+
+export const getStickerIds = async () => {
+  const stickers = await db.query.stickers.findMany({
+    columns: {
+      stickerId: true,
+    }
+  });
+
+  return stickers.map(s => s.stickerId);
+}
+
 export const getDeck = async (userId: number) => {
   return await db
     .select({
@@ -35,4 +59,16 @@ export const getDeck = async (userId: number) => {
     .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false)))
     .orderBy(asc(schema.ownedStickers.ownedStickerId))
     .innerJoin(schema.stickers, eq(schema.ownedStickers.stickerId, schema.stickers.stickerId));
+}
+
+export const addToDeck = async (userId: number, stickerIds: number[]) => {
+  const toInsert = stickerIds.map(id => ({
+    stickerId: id,
+    userId: userId,
+    isInAlbum: false,
+  } as typeof schema.ownedStickers.$inferInsert));
+
+  await db
+    .insert(schema.ownedStickers)
+    .values(toInsert);
 }

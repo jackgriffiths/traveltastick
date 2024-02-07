@@ -4,6 +4,10 @@
 
 <h1>Deck</h1>
 
+<form method="post" action="?/openPacket">
+  <button type="submit">Open Packet</button>
+</form>
+
 <div class="deck">
   {#each data.deck as sticker}
     <section>
@@ -21,6 +25,11 @@
     font-size: 2rem;
     text-align: center;
     margin-block-end: 1.5em;
+  }
+
+  form {
+    text-align: center;
+    margin-block-end: 2rem;
   }
 
   .deck {

@@ -1,1 +1,1 @@
-export const userId = 1;
+export const userId: number | null = 1;
