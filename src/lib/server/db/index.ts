@@ -45,6 +45,19 @@ export const getStickerIds = async () => {
   return stickers.map(s => s.stickerId);
 }
 
+export const getStickersInAlbum = async (userId: number) => {
+  const ownedStickers = await db.query.ownedStickers.findMany({
+    columns: {
+      stickerId: true,
+    },
+    where: () => and(
+      eq(schema.ownedStickers.userId, userId),
+      eq(schema.ownedStickers.isInAlbum, true)),
+  });
+
+  return ownedStickers.map(s => s.stickerId);
+}
+
 export const getDeck = async (userId: number) => {
   return await db
     .select({

@@ -1,5 +1,7 @@
 <script>
   export let data;
+
+  // TODO: use a set quicker lookup of the stickersInAlbum collection.
 </script>
 
 <h1>Album</h1>
@@ -12,7 +14,12 @@
         <p>{sticker.location}</p>
         <p>{sticker.description}</p>
       </div>
-      <img src={sticker.imageUrl} />
+
+      {#if data.stickersInAlbum.includes(sticker.stickerId)}
+        <img src={sticker.imageUrl} />
+      {:else}
+        <img src="https://placehold.co/300x200" />
+      {/if}
     </div>
   </section>
 {/each}
