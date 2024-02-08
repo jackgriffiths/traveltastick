@@ -26,6 +26,6 @@
     margin-inline: auto;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    padding: 1.5rem;
   }
 </style>

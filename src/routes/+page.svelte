@@ -6,23 +6,32 @@
 
 <h1>Album</h1>
 
-{#each data.stickers as sticker}
-  <section>
-    <div class="wrapper">
+<div class="album">
+  {#each data.stickers as sticker}
+    <div class="album-row">
       <div class="info">
         <h2>{sticker.title}</h2>
         <p>{sticker.location}</p>
         <p>{sticker.description}</p>
       </div>
-
+  
       {#if data.stickersInAlbum.includes(sticker.stickerId)}
-        <img src={sticker.imageUrl} />
+        <div class="sticker-wrapper">
+          <div class="sticker">
+            <img src={sticker.imageUrl} alt={sticker.title} />
+          </div>
+        </div>
       {:else}
-        <img src="https://placehold.co/300x200" />
+        <div class="slot-wrapper">
+          <div class="slot">
+            {sticker.number}
+          </div>
+        </div>
       {/if}
     </div>
-  </section>
-{/each}
+  {/each}
+</div>
+
 
 <style>
   h1 {
@@ -31,44 +40,62 @@
     margin-block-end: 1.5em;
   }
 
-  section {
+  .album {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
     container-type: inline-size;
   }
 
-  section:not(:last-of-type) {
-    margin-block-end: 3rem;
+  .album-row {
+    display: grid;
+    row-gap: 1rem;
+
+    & h2 {
+      font-size: 1.25rem;
+      font-weight: var(--fw-bold);
+    }
   }
 
-  h2 {
-    font-size: 1.25rem;
+  .sticker-wrapper, .slot-wrapper {
+    justify-self: start;
+    width: 100%;
+    max-width: 300px;
+    container-type: inline-size;
+  }
+
+  .sticker {
+    aspect-ratio: var(--sticker-aspect-ratio);
+    border: 2cqi solid white;
+
+    & img {
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .slot {
+    aspect-ratio: var(--sticker-aspect-ratio);
+    border: 1cqi solid white;
+    display: grid;
+    place-items: center;
+    font-size: 3rem;
     font-weight: var(--fw-bold);
   }
 
-  .wrapper {
-    display: grid;
-    row-gap: 1rem;
-  }
-
-  img {
-    border: 6px solid white;
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
-  }
-
   @container (width >= 600px) {
-    .wrapper {
+    .album-row {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: 1.5rem;
     }
 
-    .wrapper .info {
+    .album-row .info {
       grid-row: 1;
       grid-column: 2;
       justify-self: start;
     }
 
-    .wrapper img {
+    .album-row :is(.sticker-wrapper, .slot-wrapper) {
       grid-row: 1;
       grid-column: 1;
       justify-self: end;

@@ -1,4 +1,4 @@
-@layer reset, typography;
+@layer reset, typography, app;
 
 @layer reset {
   *,
@@ -58,5 +58,11 @@
     & + p {
       margin-block-start: var(--paragraph-spacing);
     }
+  }
+}
+
+@layer app {
+  :root {
+    --sticker-aspect-ratio: 1.5 / 1;
   }
 }
