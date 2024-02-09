@@ -1,7 +1,8 @@
-import { boolean, integer, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const users = pgTable("users", {
     userId: serial("user_id").primaryKey(),
+    lastPacketUtc: timestamp("last_packet_utc"),
 });
 
 export const stickers = pgTable("stickers", {

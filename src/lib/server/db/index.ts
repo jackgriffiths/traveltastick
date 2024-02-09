@@ -86,16 +86,34 @@ export const getOwnedSticker = async (ownedStickerId: number) => {
   return ownedSticker ?? null;
 }
 
-export const addToDeck = async (userId: number, stickerIds: number[]) => {
+export const getLastPacketDateTime = async (userId: number) => {
+  const user = await db.query.users.findFirst({
+    columns: {
+      lastPacketUtc: true,
+    },
+    where: () => eq(schema.users.userId, userId),
+  });
+
+  return user?.lastPacketUtc ?? null;
+}
+
+export const addPacketToDeck = async (userId: number, stickerIds: number[], openedUtc: Date) => {
   const toInsert = stickerIds.map(id => ({
     stickerId: id,
     userId: userId,
     isInAlbum: false,
   } as typeof schema.ownedStickers.$inferInsert));
 
-  await db
-    .insert(schema.ownedStickers)
-    .values(toInsert);
+  await db.transaction(async (tx) => {
+    await tx
+      .insert(schema.ownedStickers)
+      .values(toInsert);
+
+    await tx
+      .update(schema.users)
+      .set({ lastPacketUtc: openedUtc })
+      .where(eq(schema.users.userId, userId));
+  })
 }
 
 export const isInAlbum = async (params: { stickerId: number, userId: number }) => {

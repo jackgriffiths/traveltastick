@@ -1,6 +1,26 @@
 import * as db from '$lib/server/db';
+import { addHours } from '$lib/server/dates';
 
 const stickersPerPacket = 2;
+const packetHour = 18;
+
+export const getPacketTimes = (now: Date) => {
+  // Find the last time a packet was available.
+  let current = new Date(now.getTime());
+  current.setUTCHours(packetHour, 0, 0, 0);
+
+  if (current.getTime() > now.getTime()) {
+    current = addHours(current, -24);
+  }
+
+  // Packets are available every 24 hours.
+  const next = addHours(current, 24);
+
+  return {
+    current: current,
+    next: next,
+  }
+}
 
 export const generatePacket = async () => {
   // Not worried about performance at this point because

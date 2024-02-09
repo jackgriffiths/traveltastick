@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import { invalidateAll } from '$app/navigation';
+
   export let data;
+  export let form;
 
   let dialog: HTMLDialogElement;
 
@@ -16,13 +20,54 @@
     selected = sticker;
     dialog.showModal();
   }
+
+  const addToAlbum = async () => {
+    if (selected === null) {
+      return;
+    }
+
+    const response = await fetch("/api/deck/add-to-album", {
+      method: "POST",
+      body: JSON.stringify({
+        ownedStickerId: selected.ownedStickerId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }
+    });
+
+    if (response.ok) {
+      await invalidateAll();
+      dialog.close();
+    } else {
+      const message = (await response.json()).message;
+      alert(message);
+    }
+  }
 </script>
 
 <h1>Deck</h1>
 
-<form method="post" action="?/openPacket">
-  <button type="submit">Open packet</button>
-</form>
+{#if data.canOpenPacket}
+
+  <form method="post" action="?/openPacket" use:enhance>
+    <button type="submit">Open packet</button>
+
+    {#if form && form.success == false}
+      <p class="error">
+        {form.message}
+      </p>
+    {/if}
+  </form>
+
+{:else}
+
+  <div class="packets-info">
+    <p>Next packet in {data.nextPacket}</p>
+  </div>
+
+{/if}
 
 <div class="deck">
   {#each data.deck as sticker}
@@ -50,10 +95,9 @@
         Flip sticker
       </button>
 
-      <form method="post" action="?/addToAlbum">
-        <input type="hidden" name="ownedStickerId" value={selected.ownedStickerId} />
-        <button type="submit">Add to album</button>
-      </form>
+      <button type="button" on:click={addToAlbum}>
+        Add to album
+      </button>
 
       <button type="button" on:click={() => dialog.close()}>
         Close
@@ -70,8 +114,22 @@
     margin-block-end: 1.5em;
   }
 
+  .packets-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   form {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    & .error {
+      border: 1px solid red;
+      padding: 1em;
+    }
   }
 
   button {

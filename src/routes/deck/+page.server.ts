@@ -2,56 +2,82 @@ import type { Actions, PageServerLoad } from "./$types";
 import { fail } from "@sveltejs/kit";
 import { userId } from "$lib/server/auth";
 import * as db from "$lib/server/db";
-import { generatePacket } from "$lib/server/stickers";
+import { generatePacket, getPacketTimes } from "$lib/server/stickers";
+import { getTimeUntil } from "$lib/server/dates";
 
 export const load: PageServerLoad = async () => {
+  if (userId === null){
+    return {
+      deck: [],
+      canOpenPacket: false,
+      nextPacket: ""
+    }
+  }
+
+  const now = new Date();
+  const packetTimes = getPacketTimes(now);
+
+  const lastOpened = await db.getLastPacketDateTime(userId);
+  const canOpenPacket = lastOpened === null || lastOpened.getTime() < packetTimes.current.getTime();
+
   return {
-    deck: userId == null ? [] : await db.getDeck(userId),
+    deck: await db.getDeck(userId),
+    canOpenPacket: canOpenPacket,
+    nextPacket: getTimeUntilPacket(now, packetTimes.next),
   }
 }
 
 export const actions: Actions = {
-  addToAlbum: async (event) => {
-    if (userId == null) {
-      return fail(401);
-    }
-
-    const formData = await event.request.formData();
-    const ownedStickerIdRaw = formData.get("ownedStickerId");
-
-    if (ownedStickerIdRaw == null || typeof ownedStickerIdRaw !== "string") {
-      return fail(400, { error: "ID missing"});
-    }
-
-    const ownedStickerId = Number.parseInt(ownedStickerIdRaw);
-    if (Number.isNaN(ownedStickerId)) {
-      return fail(400, { error: "ID is not a number"});
-    }
-
-    const ownedSticker = await db.getOwnedSticker(ownedStickerId);
-
-    if (ownedSticker == null || ownedSticker.userId !== userId) {
-      return fail(400, { error: "Invalid ID"});
-    }
-
-    const isInAlbum = await db.isInAlbum({ stickerId: ownedSticker.stickerId, userId: ownedSticker.userId });
-
-    if (isInAlbum) {
-      return fail(400, { error: "Sticker is already in album" });
-    }
-
-    await db.addToAlbum(ownedStickerId);
-  },
   openPacket: async () => {
     if (userId == null) {
-      return fail(401);
+      return fail(401, {
+        success: false,
+        message: "Unauthenticated"
+      });
+    }
+
+    const now = new Date();
+    const packetTimes = getPacketTimes(now);
+
+    const lastOpened = await db.getLastPacketDateTime(userId);
+    const canOpenPacket = lastOpened === null || lastOpened.getTime() < packetTimes.current.getTime();
+
+    if (!canOpenPacket) {
+      return fail(400, {
+        success: false,
+        message: "No packet available to open"
+      })
     }
 
     const packet = await generatePacket();
-    await db.addToDeck(userId, packet.map(s => s.stickerId));
+    await db.addPacketToDeck(userId, packet.map(s => s.stickerId), now);
 
     return {
+      success: true,
       stickers: packet,
     };
   }
+}
+
+const getTimeUntilPacket = (now: Date, next: Date) => {
+  const timeUntil = getTimeUntil(now, next);
+
+  const h = timeUntil.hours;
+  const hFormatted = `${h} ${h === 1 ? "hour" : "hours"}`;
+  
+  const m = timeUntil.minutes;
+  const mFormatted = `${m} ${m === 1 ? "minute" : "minutes"}`;
+  
+  const s = timeUntil.seconds
+  const sFormatted = `${s} ${s === 1 ? "second" : "seconds"}`;
+
+  if (h === 0 && m === 0) {
+    return sFormatted;
+  }
+
+  if (h === 0) {
+    return `${mFormatted} and ${sFormatted}`;
+  }
+
+  return `${hFormatted} and ${mFormatted}`;
 }
