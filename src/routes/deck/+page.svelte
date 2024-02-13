@@ -71,7 +71,7 @@
 
 <div class="deck">
   {#each data.deck as sticker}
-    <button class="sticker" on:click={() => openDialog(sticker)}>
+    <button class="sticker" class:shiny-sticker={sticker.isShiny} style="--shiny-sticker-gradient-final-angle: 10deg" on:click={() => openDialog(sticker)}>
       <img src={sticker.imageUrl} alt={sticker.title} />
     </button>
   {/each}
@@ -81,7 +81,7 @@
   {#if selected != null}
 
     <div class="selected-sticker two-sided" class:flipped={isSelectedStickerFlipped}>
-      <div class="front">
+      <div class="front" class:shiny-sticker={selected.isShiny}>
         <img src={selected.imageUrl} alt={selected.title} />
       </div>
       <div class="back">
@@ -153,8 +153,9 @@
   button.sticker {
     display: block;
     outline-offset: 5px;
-    border: 2cqi solid white;
-    background: transparent;
+    border-width: 3cqi;
+    border-style: solid;
+    border-color: white;
     padding: 0;
     aspect-ratio: var(--sticker-aspect-ratio);
     position: relative;
@@ -201,7 +202,9 @@
     container-type: inline-size;
 
     & .front, .back {
-      border: 2cqi solid white;
+      border-width: 3cqi;
+      border-style: solid;
+      border-color: white;
     }
 
     & .front > img {
@@ -210,7 +213,7 @@
     }
 
     & .back {
-      background: hsl(203, 60%, 14%);
+      background: hsl(204, 21%, 46%);
       padding: 3cqi;
       color: white;
       text-align: center;

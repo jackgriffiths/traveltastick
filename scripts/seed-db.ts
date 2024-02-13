@@ -25,7 +25,7 @@ const stickers = [
     location: "Milky Way",
     description: "A planet 150,000,000 kilometers (93,000,000 miles) from the sun that contains the only known life in the universe.",
     url: "https://photojournal.jpl.nasa.gov/browse/PIA00114.gif",
-    isRare: true,
+    isShiny: true,
   },
   {
     number: 2,
@@ -33,7 +33,7 @@ const stickers = [
     location: "Mexico",
     description: "An ancient Mesoamerican city located 40 kilometers (25 miles) northeast of modern-day Mexico City.",
     url: "https://news.artnet.com/app/news-upload/2021/04/GettyImages-122225161-256x256.jpg",
-    isRare: false,
+    isShiny: false,
   },
   {
     number: 3,
@@ -41,7 +41,7 @@ const stickers = [
     location: "Scotland",
     description: "A historic castle built in the 11th century on an extinct volcano.",
     url: "https://i.redd.it/k6oixfvuzrc71.jpg",
-    isRare: false,
+    isShiny: false,
   },
 ];
 
@@ -62,7 +62,7 @@ async function insertStickers(db: Db) {
       location: s.location,
       description: s.description,
       imageUrl: s.url,
-      isRare: s.isRare,
+      isShiny: s.isShiny,
     }));
 
   const insertedRows = await db

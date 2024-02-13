@@ -17,7 +17,7 @@
   
       {#if data.stickersInAlbum.includes(sticker.stickerId)}
         <div class="sticker-wrapper">
-          <div class="sticker">
+          <div class="sticker" class:shiny-sticker={sticker.isShiny}>
             <img src={sticker.imageUrl} alt={sticker.title} />
           </div>
         </div>
@@ -65,7 +65,10 @@
 
   .sticker {
     aspect-ratio: var(--sticker-aspect-ratio);
-    border: 2cqi solid white;
+    border-width: 3cqi;
+    border-style: solid;
+    border-color: white;
+    background: white;
 
     & img {
       width: 100%;

@@ -65,4 +65,44 @@
   :root {
     --sticker-aspect-ratio: 1.5 / 1;
   }
+
+  .shiny-sticker {
+    --shiny-sticker-colour: rgba(150, 150, 150, 1);
+    --shiny-sticker-highlight-colour: rgba(255, 255, 255, 1);
+    --shiny-sticker-gradient-start-angle: 30deg;
+    --shiny-sticker-gradient-angle-shift: 10deg;
+    --shiny-sticker-gradient-angle: var(--shiny-sticker-gradient-start-angle);
+
+    --shiny-sticker-gradient: linear-gradient(
+      var(--shiny-sticker-gradient-angle),
+      var(--shiny-sticker-colour) 18%,
+      var(--shiny-sticker-highlight-colour) 22%,
+      var(--shiny-sticker-colour) 25%,
+      var(--shiny-sticker-colour) 35%,
+      var(--shiny-sticker-highlight-colour) 37%,
+      var(--shiny-sticker-colour) 39%,
+      var(--shiny-sticker-colour) 63%,
+      var(--shiny-sticker-highlight-colour) 67%,
+      var(--shiny-sticker-colour) 71%,
+      var(--shiny-sticker-colour) 86%,
+      var(--shiny-sticker-highlight-colour) 89%,
+      var(--shiny-sticker-colour) 92%);
+
+    border-image-source: var(--shiny-sticker-gradient);
+    border-image-slice: 1;
+    background: var(--shiny-sticker-colour);
+    animation: 3s shine ease-in-out alternate infinite;
+  }
+
+  @keyframes shine {
+    100% {
+      --shiny-sticker-gradient-angle: calc(var(--shiny-sticker-gradient-start-angle) + var(--shiny-sticker-gradient-angle-shift));
+    }
+  }
+
+  @property --shiny-sticker-gradient-angle {
+    initial-value: 0deg;
+    inherits: false;
+    syntax: '<angle>';
+  }
 }

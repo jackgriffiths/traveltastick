@@ -227,6 +227,7 @@ export const getStickers = async () => {
       location: true,
       description: true,
       imageUrl: true,
+      isShiny: true,
     },
     orderBy: [asc(schema.stickers.number)]
   });
@@ -278,6 +279,7 @@ export const getDeck = async (userId: number) => {
       title: schema.stickers.title,
       location: schema.stickers.location,
       imageUrl: schema.stickers.imageUrl,
+      isShiny: schema.stickers.isShiny,
     })
     .from(schema.ownedStickers)
     .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false)))

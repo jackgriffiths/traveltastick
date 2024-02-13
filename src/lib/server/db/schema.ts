@@ -40,6 +40,7 @@ export const stickers = pgTable("stickers", {
   location: text("location").notNull(),
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
+  isShiny: boolean("is_shiny").notNull(),
 });
 
 export const ownedStickers = pgTable("owned_stickers", {
