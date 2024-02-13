@@ -27,6 +27,10 @@ export const credentials = pgTable("credentials", {
   userId: integer("user_id").notNull().references(() => users.userId),
   publicKey: text("public_key").notNull(),
   counter: integer("counter").notNull(),
+  createdUtc: timestamp("created_utc").notNull(),
+  lastUsedUtc: timestamp("last_used_utc").notNull(),
+  canBeBackedUp: boolean("can_be_backed_up").notNull(),
+  isBackedUp: boolean("is_backed_up").notNull(),
 });
 
 export const stickers = pgTable("stickers", {

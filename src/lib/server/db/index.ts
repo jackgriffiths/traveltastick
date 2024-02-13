@@ -121,15 +121,17 @@ export const updateChallenge = async (sessionId: string, challenge: string, expi
     .where(eq(schema.sessions.sessionId, sessionId));
 }
 
-export const createUser = async (sessionId: string, registrationId: number, userToCreate: { userHandle: string, credential: { credentialId: Uint8Array, publicKey: Uint8Array, counter: number }}) => {
+export const createUser = async (sessionId: string, registrationId: number, userToCreate: { userHandle: string, credential: { credentialId: Uint8Array, publicKey: Uint8Array, counter: number, canBeBackedUp: boolean, isBackedUp: boolean }}) => {
   return await db.transaction(async (tx) => {
+
+    const now = new Date();
 
     // Create the user.
     const users = await tx
       .insert(schema.users)
       .values({
         userHandle: userToCreate.userHandle,
-        registeredUtc: new Date(),
+        registeredUtc: now,
       })
       .returning({
         userId: schema.users.userId,
@@ -144,6 +146,10 @@ export const createUser = async (sessionId: string, registrationId: number, user
         publicKey: isoBase64URL.fromBuffer(userToCreate.credential.publicKey),
         userId: user.userId,
         counter: userToCreate.credential.counter,
+        createdUtc: now,
+        lastUsedUtc: now,
+        canBeBackedUp: userToCreate.credential.canBeBackedUp,
+        isBackedUp: userToCreate.credential.isBackedUp,
       });
 
     // Link the session to the user instead of the registration.
@@ -166,14 +172,17 @@ export const createUser = async (sessionId: string, registrationId: number, user
   });
 }
 
-export const saveUserAuthentication = async (sessionId: string, userId: number, credential: { credentialId: Uint8Array, counter: number }) => {
+export const saveUserAuthentication = async (sessionId: string, userId: number, credential: { credentialId: Uint8Array, counter: number, canBeBackedUp: boolean, isBackedUp: boolean }) => {
   await db.transaction(async (tx) => {
 
     // Save the latest details about the credential.
     await tx
       .update(schema.credentials)
       .set({
-        counter: credential.counter
+        counter: credential.counter,
+        lastUsedUtc: new Date(),
+        canBeBackedUp: credential.canBeBackedUp,
+        isBackedUp: credential.isBackedUp,
       })
       .where(eq(schema.credentials.credentialId, isoBase64URL.fromBuffer(credential.credentialId)));
 

@@ -41,6 +41,8 @@ export const POST: RequestHandler = async (event) => {
   const credential = {
     credentialId: authenticator.credentialID,
     counter: authenticator.newCounter,
+    canBeBackedUp: authenticator.credentialDeviceType === "multiDevice",
+    isBackedUp: authenticator.credentialBackedUp,
   }
 
   await db.saveUserAuthentication(session.sessionId, verification.userId, credential);

@@ -52,6 +52,8 @@ export const POST: RequestHandler = async (event) => {
       credentialId: verification.registrationInfo.credentialID,
       publicKey: verification.registrationInfo.credentialPublicKey,
       counter: verification.registrationInfo.counter,
+      canBeBackedUp: verification.registrationInfo.credentialDeviceType === "multiDevice",
+      isBackedUp: verification.registrationInfo.credentialBackedUp,
     }
   }
 
