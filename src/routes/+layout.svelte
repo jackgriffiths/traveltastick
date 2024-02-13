@@ -6,6 +6,7 @@
   <nav>
     <a href="/">Album</a>
     <a href="/deck">Deck</a>
+    <a href="/account">Account</a>
   </nav>
 
   <main>

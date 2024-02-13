@@ -32,7 +32,6 @@
   {/each}
 </div>
 
-
 <style>
   h1 {
     font-size: 2rem;

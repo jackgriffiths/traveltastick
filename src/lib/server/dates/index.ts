@@ -1,5 +1,17 @@
 export const addHours = (date: Date, hours: number) => {
-  return new Date(date.getTime() + (hours * 60 * 60 * 1000));
+  return addMinutes(date, hours * 60);
+}
+
+export const addMinutes = (date: Date, minutes: number) => {
+  return addSeconds(date, minutes * 60);
+}
+
+export const addSeconds = (date: Date, seconds: number) => {
+  return addMilliseconds(date, seconds * 1000);
+}
+
+export const addMilliseconds = (date: Date, milliseconds: number) => {
+  return new Date(date.getTime() + milliseconds);
 }
 
 export const getTimeUntil = (reference: Date, until: Date) => {

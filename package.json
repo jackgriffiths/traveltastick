@@ -12,10 +12,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@simplewebauthn/browser": "^9.0.1",
+    "@simplewebauthn/server": "^9.0.2",
     "drizzle-orm": "^0.29.3",
     "postgres": "^3.4.3"
   },
   "devDependencies": {
+    "@simplewebauthn/types": "^9.0.1",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",

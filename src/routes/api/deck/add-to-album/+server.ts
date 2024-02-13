@@ -1,9 +1,10 @@
 import { error, json, type RequestHandler } from "@sveltejs/kit";
-import { userId } from "$lib/server/auth";
 import * as db from "$lib/server/db";
 
-export const POST: RequestHandler = async ({ request }) => {
-  if (userId == null) {
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const userId = locals.session?.userId ?? null;
+  
+  if (userId === null) {
     return error(401);
   }
 

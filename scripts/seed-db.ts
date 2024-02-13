@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/lib/server/db/schema";
@@ -79,7 +80,10 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
   const ownedStickersToInsert: (typeof schema.ownedStickers.$inferInsert)[] = [];
 
   for (const user of users) {
-    const toInsert: typeof schema.users.$inferInsert = {};
+    const toInsert: typeof schema.users.$inferInsert = {
+      userHandle: randomBytes(16).toString("hex"),
+      registeredUtc: new Date(),
+    };
 
     const insertedRow = (await db
       .insert(schema.users)

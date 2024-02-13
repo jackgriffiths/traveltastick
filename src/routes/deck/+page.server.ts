@@ -1,17 +1,14 @@
 import type { Actions, PageServerLoad } from "./$types";
-import { fail } from "@sveltejs/kit";
-import { userId } from "$lib/server/auth";
+import { fail, redirect } from "@sveltejs/kit";
 import * as db from "$lib/server/db";
 import { generatePacket, getPacketTimes } from "$lib/server/stickers";
 import { getTimeUntil } from "$lib/server/dates";
 
-export const load: PageServerLoad = async () => {
-  if (userId === null){
-    return {
-      deck: [],
-      canOpenPacket: false,
-      nextPacket: ""
-    }
+export const load: PageServerLoad = async (event) => {
+  const userId = event.locals.session?.userId ?? null;
+
+  if (userId === null) {
+    throw redirect(302, "/login");
   }
 
   const now = new Date();
@@ -28,8 +25,10 @@ export const load: PageServerLoad = async () => {
 }
 
 export const actions: Actions = {
-  openPacket: async () => {
-    if (userId == null) {
+  openPacket: async (event) => {
+    const userId = event.locals.session?.userId ?? null;
+
+    if (userId === null) {
       return fail(401, {
         success: false,
         message: "Unauthenticated"
