@@ -8,7 +8,7 @@ const cookieName = "session";
 const sessionLengthHours = 7 * 24; // 7 days
 
 const generateSessionId = () => {
-  return randomBytes(32).toString("hex");
+  return randomBytes(32).toString("base64url");
 }
 
 export const startRegistrationSession = async (cookies: Cookies, registrationId: number, challenge: string, challengeExpiresUtc: Date) => {

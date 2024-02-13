@@ -1,6 +1,7 @@
 import { asc, eq, and, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { DB_CONNECTION_STRING } from "$env/static/private";
 import * as schema from "$lib/server/db/schema";
 
@@ -139,8 +140,8 @@ export const createUser = async (sessionId: string, registrationId: number, user
     await tx
       .insert(schema.credentials)
       .values({
-        credentialId: toHex(userToCreate.credential.credentialId),
-        publicKey: toHex(userToCreate.credential.publicKey),
+        credentialId: isoBase64URL.fromBuffer(userToCreate.credential.credentialId),
+        publicKey: isoBase64URL.fromBuffer(userToCreate.credential.publicKey),
         userId: user.userId,
         counter: userToCreate.credential.counter,
       });
@@ -174,7 +175,7 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
       .set({
         counter: credential.counter
       })
-      .where(eq(schema.credentials.credentialId, toHex(credential.credentialId)));
+      .where(eq(schema.credentials.credentialId, isoBase64URL.fromBuffer(credential.credentialId)));
 
     // Link the session to the user.
     await tx
@@ -188,14 +189,24 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
 }
 
 export const getCredential = async (credentialId: Uint8Array) => {
-  return await db.query.credentials.findFirst({
+  const credential = await db.query.credentials.findFirst({
     columns: {
       userId: true,
       publicKey: true,
       counter: true,
     },
-    where: () => eq(schema.credentials.credentialId, toHex(credentialId)),
+    where: () => eq(schema.credentials.credentialId, isoBase64URL.fromBuffer(credentialId)),
   });
+
+  if (!credential) {
+    return undefined;
+  }
+
+  return {
+    userId: credential.userId,
+    publicKey: isoBase64URL.toBuffer(credential.publicKey),
+    counter: credential.counter,
+  }
 }
 
 export const getStickers = async () => {
@@ -325,8 +336,4 @@ export const addToAlbum = async (ownedStickerId: number) => {
     .update(schema.ownedStickers)
     .set({ isInAlbum: true })
     .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
-}
-
-const toHex = (arr: Uint8Array) => {
-  return Buffer.from(arr).toString("hex");
 }

@@ -81,7 +81,7 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
 
   for (const user of users) {
     const toInsert: typeof schema.users.$inferInsert = {
-      userHandle: randomBytes(16).toString("hex"),
+      userHandle: randomBytes(32).toString("base64url"),
       registeredUtc: new Date(),
     };
 

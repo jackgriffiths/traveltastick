@@ -5,7 +5,7 @@ import * as auth from "$lib/server/auth";
 import * as db from "$lib/server/db";
 
 const generateUserHandle = () => {
-  return randomBytes(32).toString("hex");
+  return randomBytes(32).toString("base64url");
 }
 
 export const getOrCreateRegistration = async (registrationId: number | null) => {
