@@ -80,6 +80,13 @@
     padding-inline: 1em;
   }
 
+  dialog {
+    margin: auto;
+    padding: 1rem;
+    background: var(--body-background-color);
+    color: var(--body-text-color);
+  }
+
   .shiny-sticker {
     --shiny-sticker-colour: rgba(150, 150, 150, 1);
     --shiny-sticker-highlight-colour: rgba(255, 255, 255, 1);

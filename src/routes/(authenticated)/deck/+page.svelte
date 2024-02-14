@@ -3,10 +3,12 @@
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
   import { getTimeUntil } from '$lib/dates';
+  import { Alert } from '$lib/components';
 
   export let data;
   export let form;
 
+  let alert: Alert;
   let dialog: HTMLDialogElement;
   type Sticker = typeof data.deck[0];
   let selected: Sticker | null = null;
@@ -66,7 +68,7 @@
       dialog.close();
     } else {
       const message = (await response.json()).message;
-      alert(message);
+      alert.show("Error", message);
     }
   }
 
@@ -97,7 +99,7 @@
       dialog.close();
     } else {
       const message = (await response.json()).message;
-      alert(message);
+      alert.show("Error", message);
     }
   }
 
@@ -174,6 +176,8 @@
 
   {/if}
 </dialog>
+
+<Alert bind:this={alert} />
 
 <style>
   h1 {
