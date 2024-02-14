@@ -24,7 +24,6 @@ const stickers = [
     title: "Planet Earth",
     location: "Milky Way",
     description: "A planet 150,000,000 kilometers (93,000,000 miles) from the sun that contains the only known life in the universe.",
-    url: "https://photojournal.jpl.nasa.gov/browse/PIA00114.gif",
     isShiny: true,
   },
   {
@@ -32,7 +31,6 @@ const stickers = [
     title: "Teotihuacan",
     location: "Mexico",
     description: "An ancient Mesoamerican city located 40 kilometers (25 miles) northeast of modern-day Mexico City.",
-    url: "https://news.artnet.com/app/news-upload/2021/04/GettyImages-122225161-256x256.jpg",
     isShiny: false,
   },
   {
@@ -40,7 +38,6 @@ const stickers = [
     title: "Edinburgh Castle",
     location: "Scotland",
     description: "A historic castle built in the 11th century on an extinct volcano.",
-    url: "https://i.redd.it/k6oixfvuzrc71.jpg",
     isShiny: false,
   },
 ];
@@ -61,7 +58,6 @@ async function insertStickers(db: Db) {
       title: s.title,
       location: s.location,
       description: s.description,
-      imageUrl: s.url,
       isShiny: s.isShiny,
     }));
 

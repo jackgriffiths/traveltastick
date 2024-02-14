@@ -240,7 +240,6 @@ export const getStickers = async () => {
       title: true,
       location: true,
       description: true,
-      imageUrl: true,
       isShiny: true,
     },
     orderBy: [asc(schema.stickers.number)]
@@ -254,7 +253,6 @@ export const getStickersByIds = async (ids: number[]) => {
       number: true,
       title: true,
       location: true,
-      imageUrl: true,
     },
     where: () => inArray(schema.stickers.stickerId, ids),
     orderBy: [asc(schema.stickers.number)]
@@ -291,7 +289,6 @@ export const getDeck = async (userId: number) => {
       number: schema.stickers.number,
       title: schema.stickers.title,
       location: schema.stickers.location,
-      imageUrl: schema.stickers.imageUrl,
       isShiny: schema.stickers.isShiny,
     })
     .from(schema.ownedStickers)

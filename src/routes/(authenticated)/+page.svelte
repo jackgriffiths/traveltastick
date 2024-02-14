@@ -1,4 +1,6 @@
 <script>
+  import { getStickerImageUrl } from '$lib/stickers';
+
   export let data;
 
   // TODO: use a set quicker lookup of the stickersInAlbum collection.
@@ -18,7 +20,7 @@
       {#if data.stickersInAlbum.includes(sticker.stickerId)}
         <div class="sticker-wrapper">
           <div class="sticker" class:shiny-sticker={sticker.isShiny}>
-            <img src={sticker.imageUrl} alt={sticker.title} />
+            <img src={getStickerImageUrl(sticker.number)} alt={sticker.title} />
           </div>
         </div>
       {:else}

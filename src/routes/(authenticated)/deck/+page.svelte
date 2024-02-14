@@ -4,6 +4,7 @@
   import { invalidateAll } from '$app/navigation';
   import { getTimeUntil } from '$lib/dates';
   import { Alert } from '$lib/components';
+  import { getStickerImageUrl } from '$lib/stickers';
 
   export let data;
   export let form;
@@ -138,7 +139,7 @@
 <div class="deck">
   {#each data.deck as sticker}
     <button class="sticker" class:shiny-sticker={sticker.isShiny} on:click={() => openDialog(sticker)}>
-      <img src={sticker.imageUrl} alt={sticker.title} />
+      <img src={getStickerImageUrl(sticker.number)} alt={sticker.title} />
     </button>
   {/each}
 </div>
@@ -148,7 +149,7 @@
 
     <div class="selected-sticker two-sided" class:flipped={isSelectedStickerFlipped}>
       <div class="front" class:shiny-sticker={selected.isShiny}>
-        <img src={selected.imageUrl} alt={selected.title} />
+        <img src={getStickerImageUrl(selected.number)} alt={selected.title} />
       </div>
       <div class="back">
         <span class="number">{selected.number}</span>
