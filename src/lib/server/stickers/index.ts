@@ -4,6 +4,8 @@ import { addHours } from '$lib/server/dates';
 const stickersPerPacket = 2;
 const packetHour = 18;
 
+let sampler: null | (() => number) = null;
+
 export const getPacketTimes = (now: Date) => {
   // Find the last time a packet was available.
   let current = new Date(now.getTime());
@@ -23,21 +25,43 @@ export const getPacketTimes = (now: Date) => {
 }
 
 export const generatePacket = async () => {
-  // Not worried about performance at this point because
-  // this method will be replaced with one that samples
-  // the stickers using some sort of distribution.
+  if (sampler === null) {
+    sampler = await createStickerSampler();
+  }
 
-  const allStickerIds = await db.getStickerIds();
   const packetStickersIds = new Set<number>();
 
   while (packetStickersIds.size < stickersPerPacket) {
-    const randomIndex = Math.floor(Math.random() * allStickerIds.length);
-    const randomStickerId = allStickerIds[randomIndex];
-
-    if (!packetStickersIds.has(randomStickerId)) {
-      packetStickersIds.add(randomStickerId);
+    const stickerId = sampler();
+    if (!packetStickersIds.has(stickerId)) {
+      packetStickersIds.add(stickerId);
     }
   }
 
   return await db.getStickersByIds(Array.from(packetStickersIds));
+}
+
+const createStickerSampler = async () => {
+  // Shiny stickers are twice as rare as regular stickers.
+  const stickers = (await db.getStickersForSampling())
+    .map(s => ({
+      stickerId: s.stickerId,
+      weight: s.isShiny ? 1 : 2,
+    }));
+
+  const cumulativeWeights: number[] = [];
+  let cumulativeWeight = 0;
+
+  for (const sticker of stickers) {
+    cumulativeWeight += sticker.weight;
+    cumulativeWeights.push(cumulativeWeight);
+  }
+
+  const sample = () => {
+    const randomValue = Math.floor(Math.random() * cumulativeWeight);
+    const index = cumulativeWeights.findIndex(weight => weight > randomValue);
+    return stickers[index].stickerId;
+  }
+
+  return sample;
 }

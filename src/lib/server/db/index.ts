@@ -247,14 +247,13 @@ export const getStickersByIds = async (ids: number[]) => {
   });
 }
 
-export const getStickerIds = async () => {
-  const stickers = await db.query.stickers.findMany({
+export const getStickersForSampling = async () => {
+  return await db.query.stickers.findMany({
     columns: {
       stickerId: true,
+      isShiny: true,
     }
   });
-
-  return stickers.map(s => s.stickerId);
 }
 
 export const getStickersInAlbum = async (userId: number) => {
