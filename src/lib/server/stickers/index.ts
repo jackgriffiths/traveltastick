@@ -1,5 +1,5 @@
 import * as db from '$lib/server/db';
-import { addHours } from '$lib/server/dates';
+import { addHours } from '$lib/dates';
 
 const stickersPerPacket = 2;
 const packetHour = 18;

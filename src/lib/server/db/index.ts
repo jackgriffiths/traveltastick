@@ -1,4 +1,4 @@
-import { asc, eq, and, inArray } from "drizzle-orm";
+import { asc, eq, and, inArray, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { isoBase64URL } from "@simplewebauthn/server/helpers";
@@ -282,7 +282,7 @@ export const getDeck = async (userId: number) => {
     })
     .from(schema.ownedStickers)
     .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false)))
-    .orderBy(asc(schema.ownedStickers.ownedStickerId))
+    .orderBy(desc(schema.ownedStickers.ownedStickerId))
     .innerJoin(schema.stickers, eq(schema.ownedStickers.stickerId, schema.stickers.stickerId));
 }
 

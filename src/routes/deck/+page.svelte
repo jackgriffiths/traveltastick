@@ -1,22 +1,46 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
+  import { getTimeUntil } from '$lib/dates';
 
   export let data;
   export let form;
 
   let dialog: HTMLDialogElement;
+  type Sticker = typeof data.deck[0];
+  let selected: Sticker | null = null;
+  let isSelectedStickerFlipped = false;
+  let now = new Date();
+  let interval: NodeJS.Timeout | null = null;
+  $: timeUntilNextPacket = getTimeUntil(now, data.nextPacket);
+  
+  const formatTimeUntilNextPacket = (hours: number, minutes: number, seconds: number) => {
+    const format = (number: number) => number.toString().padStart(2, "0");
+    return `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+  }
 
-  let onDialogClosed = () => {
+  $: {
+    const countdown = !data.canOpenPacket;
+    if (countdown) {
+      if (interval === null) {
+        now = new Date(); // Update the current time first, instead of waiting one second.
+        interval = setInterval(() => now = new Date(), 1000);
+      }
+    } else {
+      if (interval !== null) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+  }
+
+  const onDialogClosed = () => {
     selected = null;
     isSelectedStickerFlipped = false;
   }
 
-  type Sticker = typeof data.deck[0];
-  let selected: Sticker | null = null;
-  let isSelectedStickerFlipped = false;
-
-  let openDialog = (sticker: Sticker) => {
+  const openDialog = (sticker: Sticker) => {
     selected = sticker;
     dialog.showModal();
   }
@@ -45,6 +69,12 @@
       alert(message);
     }
   }
+
+  onDestroy(() => {
+    if (interval !== null) {
+      clearInterval(interval);
+    }
+  });
 </script>
 
 <h1>Deck</h1>
@@ -52,7 +82,9 @@
 {#if data.canOpenPacket}
 
   <form method="post" action="?/openPacket" use:enhance>
-    <button type="submit">Open packet</button>
+    <button type="submit" class="open-packet-button">
+      <img src="/packet.png" alt="Packet" />
+    </button>
 
     {#if form && form.success == false}
       <p class="error">
@@ -64,14 +96,15 @@
 {:else}
 
   <div class="packets-info">
-    <p>Next packet in {data.nextPacket}</p>
+    <p>Next packet</p>
+    <p class="countdown">{formatTimeUntilNextPacket(timeUntilNextPacket.hours, timeUntilNextPacket.minutes, timeUntilNextPacket.seconds)}</p>
   </div>
 
 {/if}
 
 <div class="deck">
   {#each data.deck as sticker}
-    <button class="sticker" class:shiny-sticker={sticker.isShiny} style="--shiny-sticker-gradient-final-angle: 10deg" on:click={() => openDialog(sticker)}>
+    <button class="sticker" class:shiny-sticker={sticker.isShiny} on:click={() => openDialog(sticker)}>
       <img src={sticker.imageUrl} alt={sticker.title} />
     </button>
   {/each}
@@ -118,17 +151,61 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    & > p {
+      margin-block: 0;
+    }
+
+    & > .countdown {
+      font-size: 2rem;
+    }
   }
 
   form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    max-width: 340px;
+    margin-inline: auto;
+    container-type: inline-size;
 
     & .error {
       border: 1px solid red;
       padding: 1em;
+    }
+  }
+
+  @keyframes wiggle {
+    0% {
+      rotate: 0deg;
+    }
+    5% {
+      rotate: -2deg;
+    }
+    15% {
+      rotate: 2deg;
+    }
+    25% {
+      rotate: 0deg;
+    }
+    100% {
+      rotate: 0deg;
+    }
+  }
+
+  .open-packet-button {
+    cursor: pointer;
+    padding: 0;
+    background: white;
+    max-width: 340px;
+    border: 6cqi solid rgb(35, 56, 150);
+    outline-offset: 5px;
+    transition: scale 0.2s linear;
+    animation: 5s wiggle linear infinite;
+
+    & > img {
+      aspect-ratio: var(--sticker-aspect-ratio);
+    }
+
+    &:hover {
+      scale: 1.05;
     }
   }
 
@@ -151,6 +228,7 @@
   }
 
   button.sticker {
+    cursor: pointer;
     display: block;
     outline-offset: 5px;
     border-width: 3cqi;

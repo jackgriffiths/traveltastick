@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import type { Cookies } from "@sveltejs/kit";
-import { addHours } from "$lib/server/dates";
+import { addHours } from "$lib/dates";
 import * as db from "$lib/server/db";
 import { dev } from "$app/environment";
 

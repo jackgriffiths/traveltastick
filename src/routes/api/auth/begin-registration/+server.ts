@@ -1,6 +1,6 @@
 
 import { error, json, type RequestHandler } from "@sveltejs/kit";
-import { addMilliseconds } from "$lib/server/dates";
+import { addMilliseconds } from "$lib/dates";
 import { getOrCreateRegistration, getRegistrationOptions } from "$lib/server/auth/registration";
 import { setSessionChallenge, startRegistrationSession } from "$lib/server/sessions";
 

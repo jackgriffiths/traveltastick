@@ -2,7 +2,6 @@ import type { Actions, PageServerLoad } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
 import * as db from "$lib/server/db";
 import { generatePacket, getPacketTimes } from "$lib/server/stickers";
-import { getTimeUntil } from "$lib/server/dates";
 
 export const load: PageServerLoad = async (event) => {
   const userId = event.locals.session?.userId ?? null;
@@ -20,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
   return {
     deck: await db.getDeck(userId),
     canOpenPacket: canOpenPacket,
-    nextPacket: getTimeUntilPacket(now, packetTimes.next),
+    nextPacket: packetTimes.next,
   }
 }
 
@@ -56,27 +55,4 @@ export const actions: Actions = {
       stickers: packet,
     };
   }
-}
-
-const getTimeUntilPacket = (now: Date, next: Date) => {
-  const timeUntil = getTimeUntil(now, next);
-
-  const h = timeUntil.hours;
-  const hFormatted = `${h} ${h === 1 ? "hour" : "hours"}`;
-  
-  const m = timeUntil.minutes;
-  const mFormatted = `${m} ${m === 1 ? "minute" : "minutes"}`;
-  
-  const s = timeUntil.seconds
-  const sFormatted = `${s} ${s === 1 ? "second" : "seconds"}`;
-
-  if (h === 0 && m === 0) {
-    return sFormatted;
-  }
-
-  if (h === 0) {
-    return `${mFormatted} and ${sFormatted}`;
-  }
-
-  return `${hFormatted} and ${mFormatted}`;
 }

@@ -1,6 +1,6 @@
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 import { getAuthenticationOptions } from "$lib/server/auth/authentication";
-import { addMilliseconds } from "$lib/server/dates";
+import { addMilliseconds } from "$lib/dates";
 import { setSessionChallenge, startAuthenticationSession } from "$lib/server/sessions";
 
 export const POST: RequestHandler = async (event) => {
