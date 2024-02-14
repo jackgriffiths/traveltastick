@@ -305,6 +305,7 @@ export const getOwnedSticker = async (ownedStickerId: number) => {
     columns: {
       stickerId: true,
       userId: true,
+      isInAlbum: true,
     },
     where: () => eq(schema.ownedStickers.ownedStickerId, ownedStickerId),
   });
@@ -359,5 +360,11 @@ export const addToAlbum = async (ownedStickerId: number) => {
   await db
     .update(schema.ownedStickers)
     .set({ isInAlbum: true })
+    .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
+}
+
+export const discard = async (ownedStickerId: number) => {
+  await db
+    .delete(schema.ownedStickers)
     .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
 }

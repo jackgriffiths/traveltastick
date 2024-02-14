@@ -70,6 +70,37 @@
     }
   }
 
+  const promptForDiscard = async () => {
+    if (selected === null) {
+      return;
+    }
+
+    const confirmed = confirm("Are you sure you want to discard this sticker?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    const response = await fetch("/api/deck/discard", {
+      method: "POST",
+      body: JSON.stringify({
+        ownedStickerId: selected.ownedStickerId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }
+    });
+
+    if (response.ok) {
+      await invalidateAll();
+      dialog.close();
+    } else {
+      const message = (await response.json()).message;
+      alert(message);
+    }
+  }
+
   onDestroy(() => {
     if (interval !== null) {
       clearInterval(interval);
@@ -130,6 +161,10 @@
 
       <button type="button" on:click={addToAlbum}>
         Add to album
+      </button>
+
+      <button type="button" on:click={promptForDiscard}>
+        Discard
       </button>
 
       <button type="button" on:click={() => dialog.close()}>
