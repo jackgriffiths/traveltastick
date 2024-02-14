@@ -244,12 +244,6 @@
     }
   }
 
-  button {
-    min-width: 70px;
-    padding-inline: 1em;
-    padding-block: 0.5em;
-  }
-
   .deck {
     max-width: 300px;
     margin-inline: auto;

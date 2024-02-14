@@ -53,11 +53,4 @@
     border: 2px solid gray;
     padding: 1rem;
   }
-
-  /* Move to global style */
-  button {
-    min-width: 70px;
-    padding-inline: 1em;
-    padding-block: 0.5em;
-  }
 </style>

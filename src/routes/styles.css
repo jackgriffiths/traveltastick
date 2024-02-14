@@ -66,6 +66,20 @@
     --sticker-aspect-ratio: 1.5 / 1;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  a {
+    color: var(--body-text-color);
+  }
+
+  button {
+    min-inline-size: 70px;
+    padding-block: 0.5em;
+    padding-inline: 1em;
+  }
+
   .shiny-sticker {
     --shiny-sticker-colour: rgba(150, 150, 150, 1);
     --shiny-sticker-highlight-colour: rgba(255, 255, 255, 1);
