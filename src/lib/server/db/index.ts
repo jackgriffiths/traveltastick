@@ -218,6 +218,20 @@ export const getCredential = async (credentialId: Uint8Array) => {
   }
 }
 
+export const getCredentialDetails = async (userId: number) => {
+  return await db.query.credentials.findMany({
+    columns: {
+      credentialId: true,
+      createdUtc: true,
+      lastUsedUtc: true,
+      canBeBackedUp: true,
+      isBackedUp: true,
+    },
+    where: () => eq(schema.credentials.userId, userId),
+    orderBy: [asc(schema.credentials.createdUtc)]
+  });
+}
+
 export const getStickers = async () => {
   return await db.query.stickers.findMany({
     columns: {
