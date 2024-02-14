@@ -55,20 +55,37 @@
   }
 </script>
 
-<h1>Login</h1>
+<h1>StickerAlbum</h1>
 
-<button on:click={createAccount}>
-  Create account
-</button>
+<div class="content">
 
-<button on:click={login}>
-  Log in
-</button>
+  <div class="actions">
+    <button on:click={login}>
+      Log in
+    </button>
+    <button on:click={createAccount}>
+      Create account
+    </button>
+  </div>
+</div>
 
 <style>
   h1 {
     font-size: 2rem;
     text-align: center;
     margin-block-end: 1.5em;
+  }
+
+  .content {
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 </style>
