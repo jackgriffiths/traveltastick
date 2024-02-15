@@ -365,3 +365,21 @@ export const discard = async (ownedStickerId: number) => {
     .delete(schema.ownedStickers)
     .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
 }
+
+export const isValidUserId = async (userId: number) => {
+  const user = await db.query.users.findFirst({
+    columns: {
+      userId: true,
+    },
+    where: () => eq(schema.users.userId, userId),
+  });
+
+  return user !== undefined;
+}
+
+export const transfer = async (ownedStickerId: number, recipientUserId: number) => {
+  await db
+    .update(schema.ownedStickers)
+    .set({ userId: recipientUserId })
+    .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
+}

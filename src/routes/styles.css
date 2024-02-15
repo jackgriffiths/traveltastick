@@ -76,8 +76,13 @@
 
   button {
     min-inline-size: 70px;
-    padding-block: 0.5em;
-    padding-inline: 1em;
+    padding-block: 0.35em;
+    padding-inline: 0.7em;
+  }
+
+  input:is([type="text"], [type="number"]) {
+    padding-block: 0.3rem;
+    padding-inline: 0.4rem;
   }
 
   dialog {

@@ -11,6 +11,9 @@
 
   let alert: Alert;
   let dialog: HTMLDialogElement;
+
+  let tradeDialog: HTMLDialogElement;
+  let tradeUserId: number | null | undefined;
   type Sticker = typeof data.deck[0];
   let selected: Sticker | null = null;
   let isSelectedStickerFlipped = false;
@@ -104,6 +107,39 @@
     }
   }
 
+  const onTradeDialogClosed = async () => {
+    if (tradeDialog.returnValue === "confirm" && tradeUserId != null) {
+      await trade(tradeUserId)
+    }
+    tradeUserId = null;
+  }
+
+  const trade = async (userId: number) => {
+    if (selected === null) {
+      return;
+    }
+
+    const response = await fetch("/api/deck/trade", {
+      method: "POST",
+      body: JSON.stringify({
+        ownedStickerId: selected.ownedStickerId,
+        recipientUserId: userId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }
+    });
+
+    if (response.ok) {
+      await invalidateAll();
+      dialog.close();
+    } else {
+      const message = (await response.json()).message;
+      alert.show("Error", message);
+    }
+  }
+
   onDestroy(() => {
     if (interval !== null) {
       clearInterval(interval);
@@ -115,7 +151,7 @@
 
 {#if data.canOpenPacket}
 
-  <form method="post" action="?/openPacket" use:enhance>
+  <form method="post" action="?/openPacket" class="packet-form" use:enhance>
     <button type="submit" class="open-packet-button">
       <img src="/packet.png" alt="Packet" />
     </button>
@@ -144,7 +180,7 @@
   {/each}
 </div>
 
-<dialog bind:this={dialog} on:close={onDialogClosed}>
+<dialog id="selection-dialog" bind:this={dialog} on:close={onDialogClosed}>
   {#if selected != null}
 
     <div class="selected-sticker two-sided" class:flipped={isSelectedStickerFlipped}>
@@ -166,6 +202,10 @@
         Add to album
       </button>
 
+      <button type="button" on:click={() => tradeDialog.showModal()}>
+        Trade
+      </button>
+
       <button type="button" on:click={promptForDiscard}>
         Discard
       </button>
@@ -176,6 +216,20 @@
     </div>
 
   {/if}
+</dialog>
+
+<dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed}>
+  <form method="dialog">
+    <div>
+      <label for="user-id">User ID</label>
+      <input bind:value={tradeUserId} id="user-id" type="number" required min="1" autocomplete="off" />
+    </div>
+
+    <div class="trade-actions">
+      <button type="submit" value="confirm">Send</button>
+      <button type="submit" formnovalidate>Cancel</button>
+    </div>
+  </form>
 </dialog>
 
 <Alert bind:this={alert} />
@@ -201,7 +255,7 @@
     }
   }
 
-  form {
+  .packet-form {
     max-width: 340px;
     margin-inline: auto;
     container-type: inline-size;
@@ -286,7 +340,7 @@
     }
   }
 
-  dialog {
+  #selection-dialog {
     margin: auto;
     background: transparent;
     border: 0;
@@ -358,6 +412,35 @@
 
     &.flipped {
       transform: perspective(600px) rotateY(180deg);
+    }
+  }
+
+  #trade-dialog {
+    max-inline-size: 300px;
+    & hr {
+      margin-block: 1rem;
+    }
+
+    & form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      & label {
+        display: block;
+        margin-block-end: 0.25em;
+      }
+
+      & input {
+        display: block;
+        inline-size: 120px;
+      }
+    }
+
+    & .trade-actions {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
     }
   }
 </style>
