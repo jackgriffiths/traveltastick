@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
-  import { getTimeUntil } from '$lib/dates';
   import { Alert } from '$lib/components';
   import { getStickerImageUrl } from '$lib/stickers';
+  import Countdown from './Countdown.svelte';
 
   export let data;
   export let form;
@@ -17,29 +16,6 @@
   type Sticker = typeof data.deck[0];
   let selected: Sticker | null = null;
   let isSelectedStickerFlipped = false;
-  let now = new Date();
-  let interval: NodeJS.Timeout | null = null;
-  $: timeUntilNextPacket = getTimeUntil(now, data.nextPacket);
-  
-  const formatTimeUntilNextPacket = (hours: number, minutes: number, seconds: number) => {
-    const format = (number: number) => number.toString().padStart(2, "0");
-    return `${format(hours)}:${format(minutes)}:${format(seconds)}`;
-  }
-
-  $: {
-    const countdown = !data.canOpenPacket;
-    if (countdown) {
-      if (interval === null) {
-        now = new Date(); // Update the current time first, instead of waiting one second.
-        interval = setInterval(() => now = new Date(), 1000);
-      }
-    } else {
-      if (interval !== null) {
-        clearInterval(interval);
-        interval = null;
-      }
-    }
-  }
 
   const onDialogClosed = () => {
     selected = null;
@@ -139,12 +115,6 @@
       alert.show("Error", message);
     }
   }
-
-  onDestroy(() => {
-    if (interval !== null) {
-      clearInterval(interval);
-    }
-  });
 </script>
 
 <h1>Deck</h1>
@@ -167,7 +137,7 @@
 
   <div class="packets-info">
     <p>Next packet</p>
-    <p class="countdown">{formatTimeUntilNextPacket(timeUntilNextPacket.hours, timeUntilNextPacket.minutes, timeUntilNextPacket.seconds)}</p>
+    <Countdown countdownTo={data.nextPacket} />
   </div>
 
 {/if}
@@ -248,10 +218,6 @@
 
     & > p {
       margin-block: 0;
-    }
-
-    & > .countdown {
-      font-size: 2rem;
     }
   }
 
