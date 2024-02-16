@@ -20,7 +20,7 @@
       {#if data.stickersInAlbum.includes(sticker.stickerId)}
         <div class="sticker-wrapper">
           <div class="sticker" class:shiny-sticker={sticker.isShiny}>
-            <img src={getStickerImageUrl(sticker.number)} alt={sticker.title} />
+            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
           </div>
         </div>
       {:else}
