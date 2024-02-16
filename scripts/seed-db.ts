@@ -332,7 +332,7 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Niagra Falls",
+    title: "Niagara Falls",
     location: "Canada / USA",
     description: "",
     isShiny: false
