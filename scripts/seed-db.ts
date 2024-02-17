@@ -92,7 +92,7 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Belem Tower",
+    title: "Belém Tower",
     location: "Portugal",
     description: "",
     isShiny: false
@@ -182,7 +182,7 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Saint Sophia's Cathedral",
+    title: "Saint Sophia Cathedral",
     location: "Ukraine",
     description: "",
     isShiny: false
@@ -200,12 +200,6 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Petra",
-    location: "Jordan",
-    description: "",
-    isShiny: true
-  },
-  {
     title: "Saint Basil's Cathedral",
     location: "Russia",
     description: "",
@@ -214,6 +208,18 @@ const stickers = [
   {
     title: "Baiterek Tower",
     location: "Kazakhstan",
+    description: "",
+    isShiny: false
+  },
+  {
+    title: "Petra",
+    location: "Jordan",
+    description: "",
+    isShiny: true
+  },
+  {
+    title: "Kuwait Towers",
+    location: "Kutwait",
     description: "",
     isShiny: false
   },
@@ -252,12 +258,6 @@ const stickers = [
     location: "China",
     description: "",
     isShiny: true
-  },
-  {
-    title: "Forbidden City",
-    location: "China",
-    description: "",
-    isShiny: false
   },
   {
     title: "The Big Buddha",
@@ -302,12 +302,6 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Chocolate Hills",
-    location: "Philippines",
-    description: "",
-    isShiny: false
-  },
-  {
     title: "Borobudur",
     location: "Indonesia",
     description: "",
@@ -320,12 +314,6 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "Mauna Loa",
-    location: "Hawaii",
-    description: "",
-    isShiny: false
-  },
-  {
     title: "CN Tower",
     location: "Canada",
     description: "",
@@ -333,7 +321,7 @@ const stickers = [
   },
   {
     title: "Niagara Falls",
-    location: "Canada / USA",
+    location: "Canada and United States",
     description: "",
     isShiny: false
   },
@@ -374,32 +362,8 @@ const stickers = [
     isShiny: true
   },
   {
-    title: "Great Blue Hole",
-    location: "Belize",
-    description: "",
-    isShiny: false
-  },
-  {
-    title: "Dunn's River Falls",
-    location: "Jamaica",
-    description: "",
-    isShiny: false
-  },
-  {
     title: "Panama Canal",
     location: "Panama",
-    description: "",
-    isShiny: false
-  },
-  {
-    title: "Kaieteur Falls",
-    location: "Guyana",
-    description: "",
-    isShiny: false
-  },
-  {
-    title: "Angel Falls",
-    location: "Venezuela",
     description: "",
     isShiny: false
   },
@@ -434,16 +398,28 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "La Mano",
-    location: "Uruguay",
+    title: "Obelisk of Buenos Aires",
+    location: "Argentina",
     description: "",
-    isShiny: false
+    isShiny: false,
+  },
+  {
+    title: "Iguazu Falls",
+    location: "Argentina and Brazil",
+    description: "",
+    isShiny: false,
   },
   {
     title: "Christ the Redeemer",
     location: "Brazil",
     description: "",
     isShiny: true
+  },
+  {
+    title: "La Mano",
+    location: "Uruguay",
+    description: "",
+    isShiny: false
   },
   {
     title: "Hassan II Mosque",
@@ -458,26 +434,14 @@ const stickers = [
     isShiny: true
   },
   {
-    title: "Zuma Rock",
-    location: "Nigeria",
-    description: "",
-    isShiny: false
-  },
-  {
     title: "Mount Kilimanjaro",
     location: "Tanzania",
     description: "",
     isShiny: false
   },
   {
-    title: "Serengeti National Park",
-    location: "Tanzania",
-    description: "",
-    isShiny: false
-  },
-  {
     title: "Victoria Falls",
-    location: "Zimbabwe / Zambia",
+    location: "Zimbabwe and Zambia",
     description: "",
     isShiny: false
   },
@@ -490,12 +454,6 @@ const stickers = [
   {
     title: "Table Mountain",
     location: "South Africa",
-    description: "",
-    isShiny: false
-  },
-  {
-    title: "Seller Glacier",
-    location: "Antarctica",
     description: "",
     isShiny: false
   },
