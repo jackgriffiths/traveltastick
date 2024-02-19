@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { startAuthentication, startRegistration } from "@simplewebauthn/browser";
+  import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
+  import { Alert } from "$lib/components";
 
-  // TODO: check passkeys are supported
-  // TODO: get better error messages back from server and log them, displaying something to the user
+  let alert: Alert;
 
   const post = async (url: string, body: object | undefined) => {
     return await fetch(url, {
@@ -17,9 +17,15 @@
   }
 
   const createAccount = async () => {
+    if (!browserSupportsWebAuthn()) {
+      alert.show("Not supported", "Your browser does not support passkeys. Please try a different browser.");
+      return;
+    }
+
     const beginResponse = await post("/api/auth/begin-registration", { userName: "Jack" });
     if (!beginResponse.ok) {
-      console.error(beginResponse);
+      const error = (await beginResponse.json()).message;
+      alert.show("Error", error || "Something went wrong. Please try again.");
       return;
     }
 
@@ -31,14 +37,21 @@
     if (verificationResponse.ok) {
       goto("/", { replaceState: true });
     } else {
-      console.error(verificationResponse);
+      const error = (await verificationResponse.json()).message;
+      alert.show("Error", error || "Something went wrong while creating your account. Please try again.");
     }
   }
 
   const login = async () => {
+    if (!browserSupportsWebAuthn()) {
+      alert.show("Not supported", "Your browser does not support passkeys. Please try a different browser.");
+      return;
+    }
+
     const beginResponse = await post("/api/auth/begin-authentication", undefined);
     if (!beginResponse.ok) {
-      console.error(beginResponse);
+      const error = (await beginResponse.json()).message;
+      alert.show("Error", error || "Something went wrong. Please try again.");
       return;
     }
 
@@ -50,7 +63,8 @@
     if (verificationResponse.ok) {
       goto("/", { replaceState: true });
     } else {
-      console.error(verificationResponse);
+      const error = (await verificationResponse.json()).message;
+      alert.show("Error", error || "Something went wrong while logging you in. Please try again.");
     }
   }
 </script>
@@ -72,6 +86,8 @@
     </button>
   </div>
 </div>
+
+<Alert bind:this={alert} />
 
 <style>
   h1 {

@@ -29,11 +29,11 @@ export const POST: RequestHandler = async (event) => {
   const verification = await verifyAuthentication(body, challenge.content);
 
   if (!verification || !verification.result) {
-    error(400);
+    error(400, { message: "Passkey not recognised. Please try another one."});
   }
 
   if (!verification.result.verified) {
-    error(400);
+    error(400, { message: "Passkey not recognised. Please try another one."});
   }
 
   const authenticator = verification.result.authenticationInfo;
