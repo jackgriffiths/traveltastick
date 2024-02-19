@@ -219,7 +219,9 @@
   </div>
 </dialog>
 
-<dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed} on:click={lightDismissDialog}>
   <form method="dialog">
     <div>
       <label for="user-id">User ID</label>
