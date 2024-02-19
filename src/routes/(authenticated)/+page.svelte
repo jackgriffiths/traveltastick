@@ -2,8 +2,7 @@
   import { getStickerImageUrl } from '$lib/stickers';
 
   export let data;
-
-  // TODO: use a set quicker lookup of the stickersInAlbum collection.
+  $: stickersInAlbum = new Set(data.stickersInAlbum);
 </script>
 
 <svelte:head>
@@ -21,7 +20,7 @@
         <p>{sticker.description}</p>
       </div>
   
-      {#if data.stickersInAlbum.includes(sticker.stickerId)}
+      {#if stickersInAlbum.has(sticker.stickerId)}
         <div class="sticker-wrapper">
           <div class="sticker" class:shiny={sticker.isShiny}>
             <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
