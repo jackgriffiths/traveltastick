@@ -46,5 +46,6 @@ export const ownedStickers = pgTable("owned_stickers", {
   ownedStickerId: serial("owned_sticker_id").primaryKey(),
   stickerId: integer("sticker_id").notNull().references(() => stickers.stickerId),
   userId: integer("user_id").notNull().references(() => users.userId),
+  receivedUtc: timestamp("received_utc").notNull(),
   isInAlbum: boolean("is_in_album").notNull(),
 });

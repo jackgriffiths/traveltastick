@@ -293,7 +293,7 @@ export const getDeck = async (userId: number) => {
     })
     .from(schema.ownedStickers)
     .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false)))
-    .orderBy(desc(schema.ownedStickers.ownedStickerId))
+    .orderBy(desc(schema.ownedStickers.receivedUtc), asc(schema.ownedStickers.ownedStickerId))
     .innerJoin(schema.stickers, eq(schema.ownedStickers.stickerId, schema.stickers.stickerId));
 }
 
@@ -328,6 +328,7 @@ export const addPacketToDeck = async (userId: number, stickerIds: number[], open
       .values(stickerIds.map(id => ({
         stickerId: id,
         userId: userId,
+        receivedUtc: openedUtc,
         isInAlbum: false,
       })));
 
@@ -380,6 +381,9 @@ export const isValidUserId = async (userId: number) => {
 export const transfer = async (ownedStickerId: number, recipientUserId: number) => {
   await db
     .update(schema.ownedStickers)
-    .set({ userId: recipientUserId })
+    .set({
+      userId: recipientUserId,
+      receivedUtc: new Date(),
+     })
     .where(eq(schema.ownedStickers.ownedStickerId, ownedStickerId));
 }

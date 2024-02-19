@@ -509,6 +509,7 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
       ...(user.album ?? allStickerNumbers).map(number => ({
         userId: insertedRow.id,
         stickerId: stickers.get(number)!,
+        receivedUtc: new Date(),
         isInAlbum: true,
       })));
 
@@ -516,6 +517,7 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
       ...user.deck.map(number => ({
         userId: insertedRow.id,
         stickerId: stickers.get(number)!,
+        receivedUtc: new Date(),
         isInAlbum: false,
       })));
   }
