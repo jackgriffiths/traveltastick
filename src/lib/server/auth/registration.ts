@@ -29,7 +29,7 @@ export const getRegistrationOptions = async (userHandle: string, userName: strin
     userID: userHandle,
     userName: userName,
     authenticatorSelection: {
-      residentKey: "preferred",
+      residentKey: "required",
       userVerification: "preferred",
     },
     supportedAlgorithmIDs: auth.supportedAlgorithmIds,
