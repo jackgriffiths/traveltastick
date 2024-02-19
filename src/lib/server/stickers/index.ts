@@ -1,7 +1,7 @@
 import * as db from '$lib/server/db';
 import { addHours } from '$lib/dates';
 
-const stickersPerPacket = 2;
+const stickersPerPacket = 3;
 const packetHour = 18;
 
 let sampler: null | (() => number) = null;
