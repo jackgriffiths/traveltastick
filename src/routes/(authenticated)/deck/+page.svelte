@@ -2,7 +2,7 @@
   import type { MouseEventHandler } from 'svelte/elements';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
-  import { Alert } from '$lib/components';
+  import { Alert, Confirm } from '$lib/components';
   import { getStickerImageUrl } from '$lib/stickers';
   import Countdown from './Countdown.svelte';
 
@@ -12,6 +12,7 @@
   type Sticker = typeof data.deck[0];
 
   let alert: Alert;
+  let confirm: Confirm;
 
   let menu: HTMLDialogElement;
   let menuSticker: Sticker | null = null;
@@ -19,6 +20,7 @@
   let flippedStickers = new Set<number>();
 
   let tradeDialog: HTMLDialogElement;
+  let tradeOwnedStickerId: number | null | undefined;
   let tradeUserId: number | null | undefined;
 
   const lightDismissDialog: MouseEventHandler<HTMLDialogElement> = (e) => {
@@ -81,21 +83,32 @@
     }
   }
 
-  const promptToDiscardSticker = async () => {
+  const confirmDiscardSticker = async () => {
     if (menuSticker === null) {
       return;
     }
 
-    const confirmed = confirm("Are you sure you want to discard this sticker?");
+    // Capture this before the menu is closed.
+    const ownedStickerId = menuSticker.ownedStickerId;
+    menu.close();
 
-    if (!confirmed) {
-      return;
-    }
+    confirm.show({
+      title: "Discard",
+      message: "Are you sure you want to discard this sticker?",
+      confirmButtonText: "🗑️ Discard",
+      cancelButtonText: "Cancel",
+      onConfirm: async () => {
+        await discardSticker(ownedStickerId);
+      },
+      onCancel: null
+    });
+  }
 
+  const discardSticker = async (ownedStickerId: number) => {
     const response = await fetch("/api/deck/discard", {
       method: "POST",
       body: JSON.stringify({
-        ownedStickerId: menuSticker.ownedStickerId,
+        ownedStickerId: ownedStickerId,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -112,22 +125,32 @@
     }
   }
 
-  const onTradeDialogClosed = async () => {
-    if (tradeDialog.returnValue === "confirm" && tradeUserId != null) {
-      await trade(tradeUserId)
-    }
-    tradeUserId = null;
-  }
-
-  const trade = async (userId: number) => {
+  const showTradeDialog = () => {
     if (menuSticker === null) {
       return;
     }
 
+    // Capture this before the menu is closed.
+    tradeOwnedStickerId = menuSticker.ownedStickerId;
+    menu.close();
+
+    tradeDialog.showModal();
+  }
+
+  const onTradeDialogClosed = async () => {
+    if (tradeDialog.returnValue === "confirm" && tradeOwnedStickerId != null && tradeUserId != null) {
+      await trade(tradeOwnedStickerId, tradeUserId);
+    }
+
+    tradeOwnedStickerId = null;
+    tradeUserId = null;
+  }
+
+  const trade = async (ownedStickerId: number, userId: number) => {
     const response = await fetch("/api/deck/trade", {
       method: "POST",
       body: JSON.stringify({
-        ownedStickerId: menuSticker.ownedStickerId,
+        ownedStickerId: ownedStickerId,
         recipientUserId: userId,
       }),
       headers: {
@@ -192,6 +215,7 @@
 </div>
 
 <Alert bind:this={alert} />
+<Confirm bind:this={confirm} />
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -209,11 +233,11 @@
       ✅ Add to album
     </button>
 
-    <button type="button" on:click={() => tradeDialog.showModal()}>
-      🤝 Trade
+    <button type="button" on:click={showTradeDialog}>
+      🤝 Send to a friend
     </button>
 
-    <button type="button" on:click={promptToDiscardSticker}>
+    <button type="button" on:click={confirmDiscardSticker}>
       🗑️ Discard
     </button>
   </div>
@@ -222,17 +246,22 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed} on:click={lightDismissDialog}>
-  <form method="dialog">
-    <div>
-      <label for="user-id">User ID</label>
-      <input bind:value={tradeUserId} id="user-id" type="number" required min="1" autocomplete="off" />
-    </div>
-
-    <div class="trade-actions">
-      <button type="submit" value="confirm">✅ Send</button>
-      <button type="submit" formnovalidate>❌ Cancel</button>
-    </div>
-  </form>
+  <div>
+    <p class="title">Send to a friend</p>
+    <p>Your friend can find their User ID from the Account page.</p>
+  
+    <form method="dialog">
+      <div>
+        <label for="user-id">User ID</label>
+        <input bind:value={tradeUserId} id="user-id" type="number" required min="1" autocomplete="off" />
+      </div>
+  
+      <div class="trade-actions">
+        <button type="submit" formnovalidate>Cancel</button>
+        <button type="submit" value="confirm">📩 Send</button>
+      </div>
+    </form>
+  </div>
 </dialog>
 
 <style>
@@ -406,7 +435,7 @@
     & .items {
       display: grid;
       gap: 1rem;
-      padding: 1rem;
+      padding: 1.25rem;
 
       & > button {
         text-align: start;
@@ -415,13 +444,24 @@
   }
 
   #trade-dialog {
-    max-inline-size: 300px;
+    width: 300px;
+
+    & > div {
+      padding: 1.25rem;
+    }
+
+    & p {
+      margin: 0;
+    }
+
+    & .title {
+      font-size: 1.5rem;
+      font-weight: var(--fw-bold);
+      margin-block-end: 0.25rem;
+    }
 
     & form {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      margin-block-start: 1.5rem;
 
       & label {
         display: block;
@@ -430,14 +470,17 @@
 
       & input {
         display: block;
-        inline-size: 120px;
+        inline-size: 100%;
       }
+    }
 
-      & .trade-actions {
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-      }
+    & .trade-actions {
+      margin-block-start: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: 0.5rem;
     }
   }
 
