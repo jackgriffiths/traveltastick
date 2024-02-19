@@ -199,7 +199,7 @@
 {/if}
 
 <div class="deck">
-  {#each data.deck as sticker}
+  {#each data.deck as sticker (sticker.ownedStickerId)}
     <div class="sticker-wrapper">
       <button class="sticker two-sided" class:flipped={flippedStickers.has(sticker.ownedStickerId)} on:click={() => openMenu(sticker)}>
         <div class="front" class:shiny={sticker.isShiny}>
