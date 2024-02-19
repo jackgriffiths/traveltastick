@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { MouseEventHandler } from 'svelte/elements';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
   import { Alert } from '$lib/components';
@@ -8,34 +9,62 @@
   export let data;
   export let form;
 
+  type Sticker = typeof data.deck[0];
+
   let alert: Alert;
-  let dialog: HTMLDialogElement;
+
+  let menu: HTMLDialogElement;
+  let menuSticker: Sticker | null = null;
+
+  let flippedStickers = new Set<number>();
 
   let tradeDialog: HTMLDialogElement;
   let tradeUserId: number | null | undefined;
-  type Sticker = typeof data.deck[0];
-  let selected: Sticker | null = null;
-  let isSelectedStickerFlipped = false;
 
-  const onDialogClosed = () => {
-    selected = null;
-    isSelectedStickerFlipped = false;
+  const lightDismissDialog: MouseEventHandler<HTMLDialogElement> = (e) => {
+    // This only works if the dialog has no padding and
+    // the direct child elements have no margins.
+    const dialog = e.currentTarget;
+    if (e.target === dialog) {
+      dialog.close();
+    }
   }
 
-  const openDialog = (sticker: Sticker) => {
-    selected = sticker;
-    dialog.showModal();
+  const openMenu = async (sticker: Sticker) => {
+    menuSticker = sticker;
+    menu.showModal();
   }
 
-  const addToAlbum = async () => {
-    if (selected === null) {
+  const onMenuClosed = () => {
+    menuSticker = null;
+  }
+
+  const flipSticker = () => {
+    if (menuSticker === null) {
+      return;
+    }
+
+    const ownedStickerId = menuSticker.ownedStickerId;
+
+    if (flippedStickers.has(ownedStickerId)) {
+      flippedStickers.delete(ownedStickerId);
+    } else {
+      flippedStickers.add(ownedStickerId);
+    }
+
+    // Force Svelte to update the UI
+    flippedStickers = flippedStickers;
+  }
+
+  const addStickerToAlbum = async () => {
+    if (menuSticker === null) {
       return;
     }
 
     const response = await fetch("/api/deck/add-to-album", {
       method: "POST",
       body: JSON.stringify({
-        ownedStickerId: selected.ownedStickerId,
+        ownedStickerId: menuSticker.ownedStickerId,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -45,15 +74,15 @@
 
     if (response.ok) {
       await invalidateAll();
-      dialog.close();
+      menu.close();
     } else {
       const message = (await response.json()).message;
       alert.show("Error", message);
     }
   }
 
-  const promptForDiscard = async () => {
-    if (selected === null) {
+  const promptToDiscardSticker = async () => {
+    if (menuSticker === null) {
       return;
     }
 
@@ -66,7 +95,7 @@
     const response = await fetch("/api/deck/discard", {
       method: "POST",
       body: JSON.stringify({
-        ownedStickerId: selected.ownedStickerId,
+        ownedStickerId: menuSticker.ownedStickerId,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +105,7 @@
 
     if (response.ok) {
       await invalidateAll();
-      dialog.close();
+      menu.close();
     } else {
       const message = (await response.json()).message;
       alert.show("Error", message);
@@ -91,14 +120,14 @@
   }
 
   const trade = async (userId: number) => {
-    if (selected === null) {
+    if (menuSticker === null) {
       return;
     }
 
     const response = await fetch("/api/deck/trade", {
       method: "POST",
       body: JSON.stringify({
-        ownedStickerId: selected.ownedStickerId,
+        ownedStickerId: menuSticker.ownedStickerId,
         recipientUserId: userId,
       }),
       headers: {
@@ -109,7 +138,7 @@
 
     if (response.ok) {
       await invalidateAll();
-      dialog.close();
+      menu.close();
     } else {
       const message = (await response.json()).message;
       alert.show("Error", message);
@@ -148,48 +177,46 @@
 
 <div class="deck">
   {#each data.deck as sticker}
-    <button class="sticker" class:shiny-sticker={sticker.isShiny} on:click={() => openDialog(sticker)}>
-      <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
-    </button>
+    <div class="sticker-wrapper">
+      <button class="sticker two-sided" class:flipped={flippedStickers.has(sticker.ownedStickerId)} on:click={() => openMenu(sticker)}>
+        <div class="front" class:shiny={sticker.isShiny}>
+          <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+        </div>
+        <div class="back">
+          <p class="number">{sticker.number}</p>
+          <p>{sticker.title}</p>
+        </div>
+      </button>
+    </div>
   {/each}
 </div>
 
-<dialog id="selection-dialog" bind:this={dialog} on:close={onDialogClosed}>
-  {#if selected != null}
+<Alert bind:this={alert} />
 
-    <div class="selected-sticker two-sided" class:flipped={isSelectedStickerFlipped}>
-      <div class="front" class:shiny-sticker={selected.isShiny}>
-        <img src={getStickerImageUrl(selected.title)} alt={selected.title} />
-      </div>
-      <div class="back">
-        <span class="number">{selected.number}</span>
-        <span>{selected.title}</span>
-      </div>
-    </div>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<dialog bind:this={menu} id="menu-dialog" on:close={onMenuClosed} on:click={lightDismissDialog}>
+  <div class="items">
+    <button type="button" on:click={() => menu.close()}>
+      ✖️ Cancel
+    </button>
 
-    <div class="actions">
-      <button type="button" on:click={() => isSelectedStickerFlipped = !isSelectedStickerFlipped}>
-        Flip sticker
-      </button>
+    <button type="button" on:click={flipSticker}>
+      🙃 Flip sticker
+    </button>
 
-      <button type="button" on:click={addToAlbum}>
-        Add to album
-      </button>
+    <button type="button" on:click={addStickerToAlbum}>
+      ✅ Add to album
+    </button>
 
-      <button type="button" on:click={() => tradeDialog.showModal()}>
-        Trade
-      </button>
+    <button type="button" on:click={() => tradeDialog.showModal()}>
+      🤝 Trade
+    </button>
 
-      <button type="button" on:click={promptForDiscard}>
-        Discard
-      </button>
-
-      <button type="button" on:click={() => dialog.close()}>
-        Close
-      </button>
-    </div>
-
-  {/if}
+    <button type="button" on:click={promptToDiscardSticker}>
+      🗑️ Discard
+    </button>
+  </div>
 </dialog>
 
 <dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed}>
@@ -200,13 +227,11 @@
     </div>
 
     <div class="trade-actions">
-      <button type="submit" value="confirm">Send</button>
-      <button type="submit" formnovalidate>Cancel</button>
+      <button type="submit" value="confirm">✅ Send</button>
+      <button type="submit" formnovalidate>❌ Cancel</button>
     </div>
   </form>
 </dialog>
-
-<Alert bind:this={alert} />
 
 <style>
   h1 {
@@ -226,13 +251,31 @@
   }
 
   .packet-form {
-    max-width: 340px;
+    max-width: 400px;
     margin-inline: auto;
     container-type: inline-size;
 
     & .error {
       border: 1px solid red;
       padding: 1em;
+    }
+  }
+
+  /* TODO: Nesting this inside .packet-form causes the animation keyframes to not be found. Why? */
+  .packet-form button {
+    cursor: pointer;
+    border-radius: 0;
+    padding: 0;
+    background: white;
+    border: 6cqi solid rgb(35, 56, 150);
+    outline-offset: 5px;
+    animation: 5s wiggle linear infinite;
+    box-sizing: content-box;
+    aspect-ratio: var(--sticker-image-aspect-ratio);
+
+    & > img {
+      width: 100%;
+      object-fit: cover;
     }
   }
 
@@ -254,144 +297,126 @@
     }
   }
 
-  .open-packet-button {
-    cursor: pointer;
-    padding: 0;
-    background: white;
-    max-width: 340px;
-    border: 6cqi solid rgb(35, 56, 150);
-    outline-offset: 5px;
-    transition: scale 0.2s linear;
-    animation: 5s wiggle linear infinite;
-
-    & > img {
-      aspect-ratio: var(--sticker-aspect-ratio);
-    }
-
-    &:hover {
-      scale: 1.05;
-    }
-  }
-
   .deck {
-    max-width: 300px;
-    margin-inline: auto;
     margin-block-start: 2rem;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(0, 350px));
     gap: 2rem;
+  }
 
-    /* Stickers are the same width as the deck and use the width to calculate border width */
+  .sticker-wrapper {
     container-type: inline-size;
   }
 
-  button.sticker {
-    cursor: pointer;
+  .sticker {
+    /* Prevent layout shift while image is loading */
+    inline-size: 100%;
+
     display: block;
-    outline-offset: 5px;
-    border-width: 3cqi;
-    border-style: solid;
-    border-color: white;
-    padding: 0;
-    aspect-ratio: var(--sticker-aspect-ratio);
     position: relative;
-    transition: scale 0.2s linear;
+    cursor: pointer;
 
-    &:hover {
-      scale: 1.05;
-    }
-
-    & img {
-      /* Without absolutely positioning the image, it makes the sticker too tall. TODO: why */
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      object-fit: cover;
-    }
-  }
-
-  #selection-dialog {
-    margin: auto;
-    background: transparent;
+    outline-offset: 5px;
     border: 0;
-    /* Prevents clipping during the 3D flip animation */
-    overflow: visible;
+    border-radius: 0;
+    padding: 0;
+    background: none;
 
-    &::backdrop {
-      background: #000000ee;
+    &:is(:active, :hover) {
+      background: none;
     }
 
-    & .actions {
-      margin-block-start: 3rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-  }
-
-  /* The sticker in the dialog */
-  .selected-sticker {
-    width: 400px;
-    max-width: 100%;
-    aspect-ratio: var(--sticker-aspect-ratio);
-    container-type: inline-size;
-
-    & .front, .back {
+    & :is(.front, .back) {
       border-width: 3cqi;
       border-style: solid;
-      border-color: white;
     }
 
-    & .front > img {
-      width: 100%;
-      object-fit: cover;
+    & .front {
+      inline-size: 100%;
+      border-color: var(--sticker-border-color);
+      background: var(--sticker-background-color);
+      outline-width: 1px;
+      outline-style: solid;
+      outline-color: var(--sticker-image-outline-color);
+      outline-offset: calc(-3cqi - 1px);
+
+      &.shiny {
+        --shiny-sticker-highlight-color: hsl(0, 0%, 100%);
+        --shiny-sticker-border-gradient-start-angle: 30deg;
+        --shiny-sticker-border-gradient-angle-shift: 10deg;
+        --shiny-sticker-border-gradient-angle: var(--shiny-sticker-border-gradient-start-angle);
+
+        --shiny-sticker-border-gradient: linear-gradient(
+          var(--shiny-sticker-border-gradient-angle, 30deg),
+          var(--shiny-sticker-color) 17%,
+          var(--shiny-sticker-highlight-color) 22%,
+          var(--shiny-sticker-color) 27%,
+          var(--shiny-sticker-color) 32%,
+          var(--shiny-sticker-highlight-color) 37%,
+          var(--shiny-sticker-color) 42%,
+          var(--shiny-sticker-color) 62%,
+          var(--shiny-sticker-highlight-color) 67%,
+          var(--shiny-sticker-color) 72%,
+          var(--shiny-sticker-color) 86%,
+          var(--shiny-sticker-highlight-color) 89%,
+          var(--shiny-sticker-color) 92%);
+
+        border-image-source: var(--shiny-sticker-border-gradient);
+        border-image-slice: 1;
+        background: var(--shiny-sticker-background-color);
+        outline-color: var(--shiny-sticker-image-outline-color);
+        animation: 3s shine ease-in-out alternate infinite;
+      }
+
+      & > img {
+        width: 100%;
+        aspect-ratio: var(--sticker-image-aspect-ratio);
+        object-fit: cover;
+      }
     }
 
     & .back {
-      background: hsl(204, 21%, 46%);
-      padding: 3cqi;
-      color: white;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      font-size: 1.5rem;
+      /* Remove from normal document flow so it doesn't affect the size of the sticker */
+      position: absolute;
+      inset: 0;
 
-      & .number {
-        font-size: 4rem;
-        margin-block: auto;
+      border-color: var(--sticker-border-color);
+      background: var(--sticker-back-background-color);
+      color: var(--sticker-back-text-color);
+      padding: 3cqi;
+
+      display: grid;
+      place-content: center;
+
+      & > p {
+        margin: 0;
+        text-align: center;
+      }
+
+      & > p.number {
+        font-size: 3em;
       }
     }
   }
 
-  /* All styles related to the 3D flipping effect */
-  .two-sided {
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s ease;
+  #menu-dialog {
+    & .items {
+      display: grid;
+      gap: 1rem;
+      padding: 1rem;
 
-    & .front, .back {
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-    }
-
-    & .back {
-      transform: rotateY(180deg);
-    }
-
-    &.flipped {
-      transform: perspective(600px) rotateY(180deg);
+      & > button {
+        text-align: start;
+      }
     }
   }
 
   #trade-dialog {
     max-inline-size: 300px;
-    & hr {
-      margin-block: 1rem;
-    }
 
     & form {
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -405,12 +430,30 @@
         display: block;
         inline-size: 120px;
       }
+
+      & .trade-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  /* All styles related to the 3D flipping effect */
+  .two-sided {
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+
+    & .front, .back {
+      backface-visibility: hidden;
     }
 
-    & .trade-actions {
-      display: flex;
-      flex-direction: row;
-      gap: 0.5rem;
+    & .back {
+      transform: rotateY(180deg);
+    }
+
+    &.flipped {
+      transform: perspective(600px) rotateY(180deg);
     }
   }
 </style>

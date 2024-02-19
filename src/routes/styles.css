@@ -33,13 +33,13 @@
 
   body {
     @media (prefers-color-scheme: light) {
-      --body-background-color: hsl(203, 66%, 82%);
-      --body-text-color: hsl(0, 0%, 10%);
+      --body-background-color: hsl(200, 70%, 82%);
+      --body-text-color: hsl(0, 0%, 0%);
     }
 
     @media (prefers-color-scheme: dark) {
-      --body-background-color: hsl(203, 60%, 14%);
-      --body-text-color: hsl(0, 0%, 86%);
+      --body-background-color: hsl(200, 55%, 10%);
+      --body-text-color: hsl(0, 0%, 85%);
     }
 
     background: var(--body-background-color);
@@ -63,7 +63,16 @@
 
 @layer app {
   :root {
-    --sticker-aspect-ratio: 1.5 / 1;
+    --sticker-border-color: hsl(0, 0%, 95%);
+    --sticker-background-color: var(--sticker-border-color);
+    --sticker-image-aspect-ratio: 640 / 427;
+    --sticker-image-outline-color: hsl(0, 0%, 40%);
+    --sticker-back-background-color: hsl(0, 0%, 85%);
+    --sticker-back-text-color: hsl(0, 0%, 0%);
+
+    --shiny-sticker-color: hsl(0, 0%, 60%);
+    --shiny-sticker-background-color: var(--shiny-sticker-color);
+    --shiny-sticker-image-outline-color: hsl(0, 0%, 50%);
   }
 
   html {
@@ -75,60 +84,133 @@
   }
 
   button {
+    @media (prefers-color-scheme: light) {
+      --btn-default-border-color: hsl(200, 70%, 40%);
+      --btn-default-background-color: hsl(0, 0%, 100%);
+      --btn-default-text-color: hsl(0, 0%, 5%);
+      --btn-hover-border-color: hsl(200, 70%, 40%);
+      --btn-hover-background-color: hsl(0, 0%, 95%);
+      --btn-hover-text-color: hsl(0, 0%, 5%);
+      --btn-pressed-border-color: hsl(200, 70%, 40%);
+      --btn-pressed-background-color: hsl(0, 0%, 90%);
+      --btn-pressed-text-color: hsl(0, 0%, 5%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --btn-default-border-color: hsl(200, 55%, 18%);
+      --btn-default-background-color: hsl(200, 55%, 18%);
+      --btn-default-text-color: hsl(0, 0%, 85%);
+      --btn-hover-border-color: hsl(200, 55%, 22%);
+      --btn-hover-background-color: hsl(200, 55%, 22%);
+      --btn-hover-text-color: hsl(0, 0%, 85%);
+      --btn-pressed-border-color: hsl(200, 50%, 25%);
+      --btn-pressed-background-color: hsl(200, 50%, 25%);
+      --btn-pressed-text-color: hsl(0, 0%, 85%);
+    }
+
     min-inline-size: 70px;
-    padding-block: 0.35em;
-    padding-inline: 0.7em;
+
+    border-width: 1px;
+    border-radius: 4px;
+    border-style: solid;
+    border-color: var(--btn-default-border-color);
+    background: var(--btn-default-background-color);
+    color: var(--btn-default-text-color);
+
+    padding-block: 0.6em;
+    padding-inline: 1.2em;
+
+    line-height: 1em;
+    letter-spacing: 0.01em;
+
+    &:hover {
+      border-color: var(--btn-hover-border-color);
+      background: var(--btn-hover-background-color);
+      color: var(--btn-hover-text-color);
+    }
+
+    &:active {
+      border-color: var(--btn-pressed-border-color);
+      background: var(--btn-pressed-background-color);
+      color: var(--btn-pressed-text-color);
+    }
   }
 
-  input:is([type="text"], [type="number"]) {
-    padding-block: 0.3rem;
-    padding-inline: 0.4rem;
+  input:not([type='checkbox']):not([type='radio']),
+  textarea {
+    @media (prefers-color-scheme: light) {
+      --input-default-border-color: hsl(200, 60%, 50%);
+      --input-default-background-color: var(--body-background-color);
+      --input-default-text-color: var(--body-text-color);
+      --input-hover-border-color: var(--input-default-border-color);
+      --input-hover-background-color: var(--input-default-background-color);
+      --input-hover-text-color: var(--input-default-text-color);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --input-default-border-color: hsl(200, 20%, 40%);
+      --input-default-background-color: var(--body-background-color);
+      --input-default-text-color: var(--body-text-color);
+      --input-hover-border-color: var(--input-default-border-color);
+      --input-hover-background-color: var(--input-default-background-color);
+      --input-hover-text-color: var(--input-default-text-color);
+    }
+
+    display: block;
+    max-inline-size: 100%;
+    border-width: 2px;
+    border-radius: 4px;
+    border-style: solid;
+    border-color: var(--input-default-border-color);
+    background: var(--input-default-background-color);
+    color: var(--input-default-text-color);
+    padding-block: 0.4rem;
+    padding-inline: 0.5rem;
+
+    &:hover {
+      border-color: var(--input-hover-border-color);
+      background: var(--input-hover-background-color);
+      color: var(--input-hover-text-color);
+    }
   }
 
   dialog {
+    @media (prefers-color-scheme: light) {
+      --dialog-border-color: hsl(200, 70%, 40%);
+      --dialog-background-color: var(--body-background-color);
+      --dialog-text-color: var(--body-text-color);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --dialog-border-color: hsl(200, 55%, 5%);
+      --dialog-background-color: var(--body-background-color);
+      --dialog-text-color: var(--body-text-color);
+    }
+
     margin: auto;
-    padding: 1rem;
-    background: var(--body-background-color);
-    color: var(--body-text-color);
+    border-radius: 4px;
+    border-color: var(--dialog-border-color);
+    background: var(--dialog-background-color);
+    color: var(--dialog-text-color);
+
+    /* To detect the backdrop being pressed (for light dismiss), the dialog cannot itself have padding. */
+    /* Instead the direct child elements should have padding. */
+    padding: 0;
+
+    &::backdrop {
+      background: #00000066;
+    }
   }
 
-  .shiny-sticker {
-    --shiny-sticker-colour: rgba(150, 150, 150, 1);
-    --shiny-sticker-highlight-colour: rgba(255, 255, 255, 1);
-    --shiny-sticker-gradient-start-angle: 30deg;
-    --shiny-sticker-gradient-angle-shift: 10deg;
-    --shiny-sticker-gradient-angle: var(--shiny-sticker-gradient-start-angle);
-
-    --shiny-sticker-gradient: linear-gradient(
-      var(--shiny-sticker-gradient-angle),
-      var(--shiny-sticker-colour) 18%,
-      var(--shiny-sticker-highlight-colour) 22%,
-      var(--shiny-sticker-colour) 25%,
-      var(--shiny-sticker-colour) 35%,
-      var(--shiny-sticker-highlight-colour) 37%,
-      var(--shiny-sticker-colour) 39%,
-      var(--shiny-sticker-colour) 63%,
-      var(--shiny-sticker-highlight-colour) 67%,
-      var(--shiny-sticker-colour) 71%,
-      var(--shiny-sticker-colour) 86%,
-      var(--shiny-sticker-highlight-colour) 89%,
-      var(--shiny-sticker-colour) 92%);
-
-    border-image-source: var(--shiny-sticker-gradient);
-    border-image-slice: 1;
-    background: var(--shiny-sticker-colour);
-    animation: 3s shine ease-in-out alternate infinite;
+  @property --shiny-sticker-border-gradient-angle {
+    initial-value: 0deg;
+    inherits: false;
+    syntax: '<angle>';
   }
 
   @keyframes shine {
     100% {
-      --shiny-sticker-gradient-angle: calc(var(--shiny-sticker-gradient-start-angle) + var(--shiny-sticker-gradient-angle-shift));
+      --shiny-sticker-border-gradient-angle: calc(var(--shiny-sticker-border-gradient-start-angle) + var(--shiny-sticker-border-gradient-angle-shift));
     }
-  }
-
-  @property --shiny-sticker-gradient-angle {
-    initial-value: 0deg;
-    inherits: false;
-    syntax: '<angle>';
   }
 }

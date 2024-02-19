@@ -17,16 +17,17 @@
     {#each data.credentials as credential, index}
       <div class="credential">
         <p>Passkey #{index + 1}</p>
-        <p>Created {credential.createdUtc.toLocaleString()}</p>
-        <p>Last used {credential.lastUsedUtc.toLocaleString()}</p>
+        <p>Created on {credential.createdUtc.toLocaleString()}</p>
+        <p>Last used on {credential.lastUsedUtc.toLocaleString()}</p>
         <p>Backed up? {credential.isBackedUp ? "Yes" : "No"}</p>
+        <button>🗑️ Delete</button>
       </div>
     {/each}
   </div>
 
   <form method="post" action="?/logout">
     <button type="submit">
-      Logout
+      👋 Logout
     </button>
   </form>
 </div>
@@ -54,7 +55,16 @@
   }
 
   .credential {
+    border-radius: 4px;
     border: 2px solid gray;
     padding: 1rem;
+
+    & > :first-child {
+      font-size: 1.25rem;
+    }
+
+    & > button {
+      margin-block-start: 1.5rem;
+    }
   }
 </style>

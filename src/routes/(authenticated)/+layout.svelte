@@ -11,8 +11,10 @@
 <style>
   nav {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 2rem;
+    column-gap: 2rem;
+    row-gap: 1rem;
     margin-block-end: 2rem;
   }
 </style>
