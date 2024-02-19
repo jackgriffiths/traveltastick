@@ -55,6 +55,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Login | StickerAlbum</title>
+</svelte:head>
+
 <h1>StickerAlbum</h1>
 
 <div class="content">

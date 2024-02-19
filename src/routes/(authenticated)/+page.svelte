@@ -6,6 +6,10 @@
   // TODO: use a set quicker lookup of the stickersInAlbum collection.
 </script>
 
+<svelte:head>
+  <title>Album | StickerAlbum</title>
+</svelte:head>
+
 <h1>Album</h1>
 
 <div class="album">

@@ -117,6 +117,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Deck | StickerAlbum</title>
+</svelte:head>
+
 <h1>Deck</h1>
 
 {#if data.canOpenPacket}

@@ -2,6 +2,10 @@
   export let data;
 </script>
 
+<svelte:head>
+  <title>Account | StickerAlbum</title>
+</svelte:head>
+
 <h1>Account</h1>
 
 <div class="content">
