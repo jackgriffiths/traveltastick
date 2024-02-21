@@ -72,7 +72,7 @@
 </script>
 
 <svelte:head>
-  <title>Account | StickerAlbum</title>
+  <title>Account | Traveltastick</title>
 </svelte:head>
 
 <h1>Account</h1>

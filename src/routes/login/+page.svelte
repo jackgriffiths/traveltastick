@@ -61,12 +61,12 @@
 </script>
 
 <svelte:head>
-  <title>Login | StickerAlbum</title>
+  <title>Login | Traveltastick</title>
 </svelte:head>
 
 
 <div class="content">
-  <h1>StickerAlbum</h1>
+  <h1>Traveltastick</h1>
 
   <ul class="features">
     <li>Collect stickers of famous landmarks</li>

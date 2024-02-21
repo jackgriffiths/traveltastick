@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Album | StickerAlbum</title>
+  <title>Album | Traveltastick</title>
 </svelte:head>
 
 <h1>Album</h1>

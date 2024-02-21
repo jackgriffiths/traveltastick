@@ -141,7 +141,7 @@
 </script>
 
 <svelte:head>
-  <title>Deck | StickerAlbum</title>
+  <title>Deck | Traveltastick</title>
 </svelte:head>
 
 <h1>Deck</h1>
