@@ -78,6 +78,17 @@ export const getSession = async (sessionId: string) => {
   });
 }
 
+export const getSessionCredential = async (sessionId: string) => {
+  const session = await db.query.sessions.findFirst({
+    columns: {
+      credentialId: true,
+    },
+    where: () => eq(schema.sessions.sessionId, sessionId),
+  });
+
+  return session?.credentialId ?? null;
+}
+
 export const deleteSession = async (sessionId: string) => {
   await db
     .delete(schema.sessions)
@@ -223,6 +234,17 @@ export const getCredential = async (credentialId: Uint8Array) => {
   }
 }
 
+export const getUserFromCredential = async (credentialIdBase64Url: string) => {
+  const credential = await db.query.credentials.findFirst({
+    columns: {
+      userId: true,
+    },
+    where: () => eq(schema.credentials.credentialId, credentialIdBase64Url),
+  });
+
+  return credential?.userId ?? null;
+}
+
 export const getCredentialDetails = async (userId: number) => {
   return await db.query.credentials.findMany({
     columns: {
@@ -234,6 +256,18 @@ export const getCredentialDetails = async (userId: number) => {
     },
     where: () => eq(schema.credentials.userId, userId),
     orderBy: [asc(schema.credentials.createdUtc)]
+  });
+}
+
+export const deleteCredential = async (credentialIdBase64Url: string) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(schema.sessions)
+      .where(eq(schema.sessions.credentialId, credentialIdBase64Url));
+
+    await tx
+      .delete(schema.credentials)
+      .where(eq(schema.credentials.credentialId, credentialIdBase64Url));
   });
 }
 

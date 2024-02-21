@@ -1,5 +1,38 @@
-<script>
+<script lang="ts">
+  import { Alert, Confirm } from "$lib/components";
+
   export let data;
+  let alert: Alert;
+  let confirm: Confirm;
+
+  const confirmDeleteCredential = (credentialId: string) => {
+    confirm.show({
+      title: "⚠️ Warning",
+      message: "Are you sure you want to delete this passkey? Any devices logged in using this passkey will be logged out. You will not be able to use this passkey to log in to your account again.",
+      confirmButtonText: "⚠️ Delete",
+      cancelButtonText: "Cancel",
+      onConfirm: async () => await deleteCredential(credentialId),
+      onCancel: null,
+    });
+  }
+
+  const deleteCredential = async (credentialId: string) => {
+    const response = await fetch("/api/auth/delete-credential", {
+      method: "POST",
+      body: JSON.stringify({
+        credentialId: credentialId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }
+    });
+
+    if (!response.ok) {
+      const error = (await response.json()).message;
+      alert.show("Error", error);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -9,28 +42,42 @@
 <h1>Account</h1>
 
 <div class="content">
-  <p>
-    User ID: {data.userId}
-  </p>
+  <section id="section-user-id">
+    <h2>User ID</h2>
+  
+    <p id="user-id">
+      {data.userId}
+    </p>
 
-  <div class="credentials">
-    {#each data.credentials as credential, index}
-      <div class="credential">
-        <p>Passkey #{index + 1}</p>
-        <p>Created on {credential.createdUtc.toLocaleString()}</p>
-        <p>Last used on {credential.lastUsedUtc.toLocaleString()}</p>
-        <p>Backed up? {credential.isBackedUp ? "Yes" : "No"}</p>
-        <button>🗑️ Delete</button>
-      </div>
-    {/each}
-  </div>
+    <form method="post" action="?/logout">
+      <button type="submit">
+        👋 Logout
+      </button>
+    </form>
+  </section>
 
-  <form method="post" action="?/logout">
-    <button type="submit">
-      👋 Logout
-    </button>
-  </form>
+  <section id="section-credentials">
+    <h2>Passkeys</h2>
+  
+    <div class="credentials">
+      {#each data.credentials as credential, index}
+        <div class="credential">
+          <p>Passkey #{index + 1}</p>
+          <p>Created on {credential.createdUtc.toLocaleString()}</p>
+          <p>Last used on {credential.lastUsedUtc.toLocaleString()}</p>
+          <p>Backed up? {credential.isBackedUp ? "Yes" : "No"}</p>
+  
+          <button on:click={() => confirmDeleteCredential(credential.credentialId)}>
+            🗑️ Delete
+          </button>
+        </div>
+      {/each}
+    </div>
+  </section>
 </div>
+
+<Alert bind:this={alert} />
+<Confirm bind:this={confirm} />
 
 <style>
   h1 {
@@ -39,13 +86,35 @@
     margin-block-end: 1.5em;
   }
 
+  h2 {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
   .content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    max-width: 500px;
+    gap: 3rem;
+    max-width: fit-content;
     margin-inline: auto;
+  }
+
+  #section-user-id {
+    & #user-id {
+      font-size: 3rem;
+      text-align: center;
+    }
+
+    & > form {
+      margin-block-start: 2rem;
+    }
+  }
+
+  #section-credentials {
+    & h2 {
+      margin-block-end: 1em;
+    }
   }
 
   .credentials {
