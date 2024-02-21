@@ -12,16 +12,6 @@ export const users = pgTable("users", {
   lastPacketUtc: timestamp("last_packet_utc"),
 });
 
-export const sessions = pgTable("sessions", {
-  sessionId: text("session_id").primaryKey(),
-  registrationId: integer("registration_id").references(() => registrations.registrationId),
-  userId: integer("user_id").references(() => users.userId),
-  createdUtc: timestamp("created_utc").notNull(),
-  expiresUtc: timestamp("expires_utc").notNull(),
-  challenge: text("challenge"),
-  challengeExpiresUtc: timestamp("challenge_expires_utc"),
-});
-
 export const credentials = pgTable("credentials", {
   credentialId: text("credential_id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.userId),
@@ -31,6 +21,17 @@ export const credentials = pgTable("credentials", {
   lastUsedUtc: timestamp("last_used_utc").notNull(),
   canBeBackedUp: boolean("can_be_backed_up").notNull(),
   isBackedUp: boolean("is_backed_up").notNull(),
+});
+
+export const sessions = pgTable("sessions", {
+  sessionId: text("session_id").primaryKey(),
+  registrationId: integer("registration_id").references(() => registrations.registrationId),
+  userId: integer("user_id").references(() => users.userId),
+  credentialId: text("credential_id").references(() => credentials.credentialId),
+  createdUtc: timestamp("created_utc").notNull(),
+  expiresUtc: timestamp("expires_utc").notNull(),
+  challenge: text("challenge"),
+  challengeExpiresUtc: timestamp("challenge_expires_utc"),
 });
 
 export const stickers = pgTable("stickers", {

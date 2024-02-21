@@ -139,10 +139,11 @@ export const createUser = async (sessionId: string, registrationId: number, user
     const user = users[0];
 
     // Save the credentials.
+    const credentialId =  isoBase64URL.fromBuffer(userToCreate.credential.credentialId);
     await tx
       .insert(schema.credentials)
       .values({
-        credentialId: isoBase64URL.fromBuffer(userToCreate.credential.credentialId),
+        credentialId: credentialId,
         publicKey: isoBase64URL.fromBuffer(userToCreate.credential.publicKey),
         userId: user.userId,
         counter: userToCreate.credential.counter,
@@ -158,6 +159,7 @@ export const createUser = async (sessionId: string, registrationId: number, user
       .set({
         registrationId: null,
         userId: user.userId,
+        credentialId: credentialId,
       })
       .where(eq(schema.sessions.sessionId, sessionId));
 
@@ -176,6 +178,8 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
   await db.transaction(async (tx) => {
 
     // Save the latest details about the credential.
+    const credentialId = isoBase64URL.fromBuffer(credential.credentialId);
+
     await tx
       .update(schema.credentials)
       .set({
@@ -184,7 +188,7 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
         canBeBackedUp: credential.canBeBackedUp,
         isBackedUp: credential.isBackedUp,
       })
-      .where(eq(schema.credentials.credentialId, isoBase64URL.fromBuffer(credential.credentialId)));
+      .where(eq(schema.credentials.credentialId, credentialId));
 
     // Link the session to the user.
     await tx
@@ -192,6 +196,7 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
       .set({
         registrationId: null,
         userId: userId,
+        credentialId: credentialId,
       })
       .where(eq(schema.sessions.sessionId, sessionId));
   });
