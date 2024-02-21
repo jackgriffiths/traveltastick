@@ -1,7 +1,7 @@
 
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 import { addMilliseconds } from "$lib/dates";
-import { getOrCreateRegistration, getRegistrationOptions } from "$lib/server/auth/registration";
+import { getOrCreateAccountRegistration, getCredentialRegistrationOptions } from "$lib/server/auth/registration";
 import { setSessionChallenge, startRegistrationSession } from "$lib/server/sessions";
 
 export const POST: RequestHandler = async (event) => {
@@ -12,11 +12,11 @@ export const POST: RequestHandler = async (event) => {
     error(400);
   }
 
-  const registration = await getOrCreateRegistration(session?.registrationId ?? null);
+  const registration = await getOrCreateAccountRegistration(session?.registrationId ?? null);
 
   const body = await event.request.json();
   const userName = (body.userName as string | undefined) ?? "";
-  const registrationOptions = await getRegistrationOptions(registration.userHandle, userName);
+  const registrationOptions = await getCredentialRegistrationOptions(registration.userHandle, userName);
 
   const now = new Date();
   const challenge = registrationOptions.challenge;

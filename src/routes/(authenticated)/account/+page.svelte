@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { startRegistration } from "@simplewebauthn/browser";
+  import { invalidateAll } from "$app/navigation";
   import { Alert, Confirm } from "$lib/components";
   import { post } from "$lib/json";
 
@@ -22,9 +24,33 @@
       credentialId: credentialId,
     });
 
-    if (!response.ok) {
+    if (response.ok) {
+      await invalidateAll();
+    } else {
       const error = (await response.json()).message;
       alert.show("Error", error);
+    }
+  }
+
+  const registerCredential = async () => {
+    const beginResponse = await post("/api/auth/begin-credential-creation", { userName: "test" });
+    if (!beginResponse.ok) {
+      const error = (await beginResponse.json()).message;
+      alert.show("Error", error || "Something went wrong. Please try again.");
+      return;
+    }
+
+    const registrationOptions = await beginResponse.json();
+    const registration = await startRegistration(registrationOptions);
+
+    const verificationResponse = await post("/api/auth/complete-credential-creation", registration);
+
+    if (verificationResponse.ok) {
+      alert.show("Success", "A new passkey has been created on your device.");
+      await invalidateAll();
+    } else {
+      const error = (await verificationResponse.json()).message;
+      alert.show("Error", error || "Something went wrong while creating your passkey. Please try again.");
     }
   }
 </script>
@@ -67,6 +93,10 @@
         </div>
       {/each}
     </div>
+
+    <button id="create-credential-button" on:click={registerCredential}>
+      🔑 Create passkey
+    </button>
   </section>
 </div>
 
@@ -81,7 +111,7 @@
   }
 
   h2 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     text-align: center;
   }
 
@@ -107,14 +137,14 @@
 
   #section-credentials {
     & h2 {
-      margin-block-end: 1em;
+      margin-block-end: 0.75em;
     }
   }
 
   .credentials {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .credential {
@@ -129,5 +159,9 @@
     & > button {
       margin-block-start: 1.5rem;
     }
+  }
+
+  #create-credential-button {
+    margin-block-start: 1.5rem;
   }
 </style>

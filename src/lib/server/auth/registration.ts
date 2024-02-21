@@ -8,7 +8,7 @@ const generateUserHandle = () => {
   return randomBytes(32).toString("base64url");
 }
 
-export const getOrCreateRegistration = async (registrationId: number | null) => {
+export const getOrCreateAccountRegistration = async (registrationId: number | null) => {
   if (registrationId !== null) {
     return (await db.getRegistration(registrationId))!;
   }
@@ -22,7 +22,7 @@ export const getOrCreateRegistration = async (registrationId: number | null) => 
   }
 }
 
-export const getRegistrationOptions = async (userHandle: string, userName: string) => {
+export const getCredentialRegistrationOptions = async (userHandle: string, userName: string, excludeCredentialIds?: Uint8Array[]) => {
   const options: GenerateRegistrationOptionsOpts = {
     rpID: auth.rpId,
     rpName: auth.rpName,
@@ -34,12 +34,16 @@ export const getRegistrationOptions = async (userHandle: string, userName: strin
     },
     supportedAlgorithmIDs: auth.supportedAlgorithmIds,
     timeout: auth.timeoutMilliseconds,
+    excludeCredentials: excludeCredentialIds?.map(id => ({
+      id: id,
+      type: "public-key",
+    })),
   };
 
   return await generateRegistrationOptions(options);
 }
 
-export const verifyRegistration = async (registration: RegistrationResponseJSON, expectedChallenge: string) => {
+export const verifyCredentialRegistration = async (registration: RegistrationResponseJSON, expectedChallenge: string) => {
   try {
     const options: VerifyRegistrationResponseOpts = {
       response: registration,

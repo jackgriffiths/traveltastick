@@ -185,6 +185,17 @@ export const createUser = async (sessionId: string, registrationId: number, user
   });
 }
 
+export const getUserHandle = async (userId: number) => {
+  const user = await db.query.users.findFirst({
+    columns: {
+      userHandle: true,
+    },
+    where: () => eq(schema.users.userId, userId),
+  });
+
+  return user?.userHandle ?? null;
+}
+
 export const saveUserAuthentication = async (sessionId: string, userId: number, credential: { credentialId: Uint8Array, counter: number, canBeBackedUp: boolean, isBackedUp: boolean }) => {
   await db.transaction(async (tx) => {
 
@@ -257,6 +268,34 @@ export const getCredentialDetails = async (userId: number) => {
     where: () => eq(schema.credentials.userId, userId),
     orderBy: [asc(schema.credentials.createdUtc)]
   });
+}
+
+export const getCredentialIds = async (userId: number) => {
+  const credentials = await db.query.credentials.findMany({
+    columns: {
+      credentialId: true,
+    },
+    where: () => eq(schema.credentials.userId, userId),
+  });
+
+  return credentials.map(i => i.credentialId);
+}
+
+export const createCredential = async (userId: number, credential: { credentialId: Uint8Array, publicKey: Uint8Array, counter: number, canBeBackedUp: boolean, isBackedUp: boolean }) => {
+  const now = new Date();
+  
+  await db
+    .insert(schema.credentials)
+    .values({
+      credentialId: isoBase64URL.fromBuffer(credential.credentialId),
+      publicKey: isoBase64URL.fromBuffer(credential.publicKey),
+      userId: userId,
+      counter: credential.counter,
+      createdUtc: now,
+      lastUsedUtc: now,
+      canBeBackedUp: credential.canBeBackedUp,
+      isBackedUp: credential.isBackedUp,
+    });
 }
 
 export const deleteCredential = async (credentialIdBase64Url: string) => {
