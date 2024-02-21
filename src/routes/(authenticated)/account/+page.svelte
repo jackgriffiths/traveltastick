@@ -1,7 +1,7 @@
 <script lang="ts">
   import { startRegistration } from "@simplewebauthn/browser";
   import { invalidateAll } from "$app/navigation";
-  import { Alert, Confirm } from "$lib/components";
+  import { Alert, Confirm, Dialog } from "$lib/components";
   import { post } from "$lib/json";
 
   export let data;
@@ -12,6 +12,8 @@
 
   let alert: Alert;
   let confirm: Confirm;
+  let createCredentialDialog: Dialog;
+  let accountName = "";
 
   const confirmDeleteCredential = (credentialId: string) => {
     confirm.show({
@@ -37,8 +39,17 @@
     }
   }
 
-  const registerCredential = async () => {
-    const beginResponse = await post("/api/auth/begin-credential-creation", { userName: "test" });
+  const onCreateCredentialDialogClosed = async (e: CustomEvent<{ returnValue: string }>) => {
+    const name = accountName;
+    accountName = "";
+
+    if (e.detail.returnValue === "create" && name != "") {
+      await registerCredential(name);
+    }
+  }
+
+  const registerCredential = async (accountName: string) => {
+    const beginResponse = await post("/api/auth/begin-credential-creation", { userName: accountName });
     if (!beginResponse.ok) {
       const error = (await beginResponse.json()).message;
       alert.show("Error", error || "Something went wrong. Please try again.");
@@ -101,7 +112,7 @@
       {/each}
     </div>
 
-    <button id="create-credential-button" on:click={registerCredential}>
+    <button id="create-credential-button" on:click={() => createCredentialDialog.showModal()}>
       🔑 Create passkey
     </button>
   </section>
@@ -109,6 +120,23 @@
 
 <Alert bind:this={alert} />
 <Confirm bind:this={confirm} />
+
+<Dialog bind:this={createCredentialDialog} on:close={onCreateCredentialDialogClosed}>
+  <div id="create-credential-dialog-content">
+    <p class="title">Create passkey</p>
+
+    <form method="dialog">
+      <label for="account-name">Account name</label>
+      <input id="account-name" type="text" required autocomplete="off" bind:value={accountName} />
+      <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
+
+      <div class="buttons">
+        <button type="submit" value="cancel" formnovalidate>Cancel</button>
+        <button type="submit" value="create">🔑 Create passkey</button>
+      </div>
+    </form>
+  </div>
+</Dialog>
 
 <style>
   h1 {
@@ -170,5 +198,39 @@
 
   #create-credential-button {
     margin-block-start: 1.5rem;
+  }
+
+  #create-credential-dialog-content {
+    & .title {
+      font-size: 1.5rem;
+      font-weight: var(--fw-bold);
+      margin-block-end: 0.5rem;
+    }
+
+    & label {
+      display: block;
+      margin-block-end: 0.25rem;
+    }
+
+    & input {
+      display: block;
+      inline-size: 100%;
+    }
+
+    & p {
+      max-inline-size: 40ch;
+      margin-block-start: 0.5rem;
+      margin-block-end: 1.5rem;
+      text-wrap: pretty;
+    }
+
+    & .buttons {
+      margin-block-start: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: 0.5rem;
+    }
   }
 </style>

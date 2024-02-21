@@ -83,7 +83,7 @@
   <form on:submit={createAccount}>
     <label for="name">Account name</label>
     <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
-    <p>You can choose any name you like. The name is only saved on your device and it helps you select the right account when logging in.</p>
+    <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
     <button type="submit">Create account</button>
   </form>
 </div>
@@ -93,7 +93,7 @@
 <style>
   .content {
     margin-inline: auto;
-    max-inline-size: 300px;
+    max-inline-size: 35ch;
     display: flex;
     flex-direction: column;
     align-items: stretch;
