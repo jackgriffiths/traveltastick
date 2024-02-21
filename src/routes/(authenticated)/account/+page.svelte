@@ -5,6 +5,11 @@
   import { post } from "$lib/json";
 
   export let data;
+
+  // Users should only be able to delete credentials if they have
+  // an alternative credential that they could log in with.
+  $: canDeleteCredentials = data.credentials.length >= 2;
+
   let alert: Alert;
   let confirm: Confirm;
 
@@ -87,9 +92,11 @@
           <p>Last used on {credential.lastUsedUtc.toLocaleString()}</p>
           <p>Backed up? {credential.isBackedUp ? "Yes" : "No"}</p>
   
-          <button on:click={() => confirmDeleteCredential(credential.credentialId)}>
-            🗑️ Delete
-          </button>
+          {#if canDeleteCredentials}
+            <button on:click={() => confirmDeleteCredential(credential.credentialId)}>
+              🗑️ Delete
+            </button>
+          {/if}
         </div>
       {/each}
     </div>
