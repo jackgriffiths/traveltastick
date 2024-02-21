@@ -2,7 +2,7 @@
   import type { MouseEventHandler } from 'svelte/elements';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
-  import { Alert, Confirm } from '$lib/components';
+  import { Alert, Confirm, Dialog } from '$lib/components';
   import { post } from "$lib/json";
   import { getStickerImageUrl } from '$lib/stickers';
   import Countdown from './Countdown.svelte';
@@ -15,23 +15,14 @@
   let alert: Alert;
   let confirm: Confirm;
 
-  let menu: HTMLDialogElement;
+  let menu: Dialog;
   let menuSticker: Sticker | null = null;
 
   let flippedStickers = new Set<number>();
 
-  let tradeDialog: HTMLDialogElement;
+  let tradeDialog: Dialog;
   let tradeOwnedStickerId: number | null | undefined;
   let tradeUserId: number | null | undefined;
-
-  const lightDismissDialog: MouseEventHandler<HTMLDialogElement> = (e) => {
-    // This only works if the dialog has no padding and
-    // the direct child elements have no margins.
-    const dialog = e.currentTarget;
-    if (e.target === dialog) {
-      dialog.close();
-    }
-  }
 
   const openMenu = async (sticker: Sticker) => {
     menuSticker = sticker;
@@ -124,8 +115,8 @@
     tradeDialog.showModal();
   }
 
-  const onTradeDialogClosed = async () => {
-    if (tradeDialog.returnValue === "confirm" && tradeOwnedStickerId != null && tradeUserId != null) {
+  const onTradeDialogClosed = async (e: CustomEvent<{ returnValue: string }>) => {
+    if (e.detail.returnValue === "confirm" && tradeOwnedStickerId != null && tradeUserId != null) {
       await trade(tradeOwnedStickerId, tradeUserId);
     }
 
@@ -197,10 +188,8 @@
 <Alert bind:this={alert} />
 <Confirm bind:this={confirm} />
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={menu} id="menu-dialog" on:close={onMenuClosed} on:click={lightDismissDialog}>
-  <div class="items">
+<Dialog bind:this={menu} on:close={onMenuClosed}>
+  <div id="menu-dialog-content">
     <button type="button" on:click={() => menu.close()}>
       ✖️ Cancel
     </button>
@@ -221,12 +210,10 @@
       🗑️ Discard
     </button>
   </div>
-</dialog>
+</Dialog>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={tradeDialog} id="trade-dialog" on:close={onTradeDialogClosed} on:click={lightDismissDialog}>
-  <div>
+<Dialog bind:this={tradeDialog} on:close={onTradeDialogClosed}>
+  <div id="trade-dialog-content">
     <p class="title">Send to a friend</p>
     <p>Your friend can find their User ID from the Account page.</p>
   
@@ -242,7 +229,7 @@
       </div>
     </form>
   </div>
-</dialog>
+</Dialog>
 
 <style>
   h1 {
@@ -412,27 +399,19 @@
     }
   }
 
-  #menu-dialog {
-    & .items {
-      display: grid;
-      gap: 1rem;
-      padding: 1.25rem;
+  #menu-dialog-content {
+    display: grid;
+    gap: 1rem;
 
-      & > button {
-        text-align: start;
-      }
+    & > button {
+      text-align: start;
     }
   }
 
-  #trade-dialog {
-    width: 300px;
-
-    & > div {
-      padding: 1.25rem;
-    }
-
+  #trade-dialog-content {
     & p {
       margin: 0;
+      max-width: 30ch;
     }
 
     & .title {

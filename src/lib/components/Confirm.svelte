@@ -1,16 +1,7 @@
 <script lang="ts">
-  import type { EventHandler, MouseEventHandler } from "svelte/elements";
+  import Dialog from "./Dialog.svelte";
 
-  let dialog: HTMLDialogElement;
-
-  const lightDismissDialog: MouseEventHandler<HTMLDialogElement> = (e) => {
-    // This only works if the dialog has no padding and
-    // the direct child elements have no margins.
-    const dialog = e.currentTarget;
-    if (e.target === dialog) {
-      dialog.close();
-    }
-  }
+  let dialog: Dialog;
 
   let title = "";
   let message = "";
@@ -30,12 +21,12 @@
     dialog.showModal();
   }
 
-  const onClose: EventHandler<Event, HTMLDialogElement> = (e) => {
-    if (e.currentTarget.returnValue === "confirm") {
+  const onClose = (e: CustomEvent<{ returnValue: string }>) => {
+    if (e.detail.returnValue === "confirm") {
       if (onConfirm) {
         onConfirm();
       }
-    } else if (e.currentTarget.returnValue === "cancel") {
+    } else if (e.detail.returnValue === "cancel") {
       if (onCancel) {
         onCancel();
       }
@@ -48,29 +39,20 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<dialog bind:this={dialog} on:close={onClose} on:click={lightDismissDialog}>
-  <div>
-    <p class="title">{title}</p>
-    <p>{message}</p>
-    
-    <form method="dialog">
-      <button type="submit" value="cancel">
-        {cancelButtonText}
-      </button>
-      <button type="submit" value="confirm">
-        {confirmButtonText}
-      </button>
-    </form>
-  </div>
-</dialog>
+<Dialog bind:this={dialog} on:close={onClose}>
+  <p class="title">{title}</p>
+  <p>{message}</p>
+  <form method="dialog">
+    <button type="submit" value="cancel">
+      {cancelButtonText}
+    </button>
+    <button type="submit" value="confirm">
+      {confirmButtonText}
+    </button>
+  </form>
+</Dialog>
 
 <style>
-  dialog > div {
-    padding: 1.25rem;
-  }
-
   p {
     margin: 0;
   }
