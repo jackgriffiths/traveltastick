@@ -1,21 +1,11 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
+  import { goto } from "$app/navigation";
   import { Alert } from "$lib/components";
+  import { post } from "$lib/json";
 
   let alert: Alert;
   let accountName: string;
-
-  const post = async (url: string, body: object | undefined) => {
-    return await fetch(url, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  }
 
   const createAccount = async () => {
     if (!browserSupportsWebAuthn()) {

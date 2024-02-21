@@ -3,6 +3,7 @@
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
   import { Alert, Confirm } from '$lib/components';
+  import { post } from "$lib/json";
   import { getStickerImageUrl } from '$lib/stickers';
   import Countdown from './Countdown.svelte';
 
@@ -63,15 +64,8 @@
       return;
     }
 
-    const response = await fetch("/api/deck/add-to-album", {
-      method: "POST",
-      body: JSON.stringify({
-        ownedStickerId: menuSticker.ownedStickerId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      }
+    const response = await post("/api/deck/add-to-album", {
+      ownedStickerId: menuSticker.ownedStickerId,
     });
 
     if (response.ok) {
@@ -105,15 +99,8 @@
   }
 
   const discardSticker = async (ownedStickerId: number) => {
-    const response = await fetch("/api/deck/discard", {
-      method: "POST",
-      body: JSON.stringify({
-        ownedStickerId: ownedStickerId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      }
+    const response = await post("/api/deck/discard", {
+      ownedStickerId: ownedStickerId,
     });
 
     if (response.ok) {
@@ -147,16 +134,9 @@
   }
 
   const trade = async (ownedStickerId: number, userId: number) => {
-    const response = await fetch("/api/deck/trade", {
-      method: "POST",
-      body: JSON.stringify({
-        ownedStickerId: ownedStickerId,
-        recipientUserId: userId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      }
+    const response = await post("/api/deck/trade", {
+      ownedStickerId: ownedStickerId,
+      recipientUserId: userId,
     });
 
     if (response.ok) {

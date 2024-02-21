@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Alert, Confirm } from "$lib/components";
+  import { post } from "$lib/json";
 
   export let data;
   let alert: Alert;
@@ -17,15 +18,8 @@
   }
 
   const deleteCredential = async (credentialId: string) => {
-    const response = await fetch("/api/auth/delete-credential", {
-      method: "POST",
-      body: JSON.stringify({
-        credentialId: credentialId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      }
+    const response = await post("/api/auth/delete-credential", {
+      credentialId: credentialId,
     });
 
     if (!response.ok) {
