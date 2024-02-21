@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { MouseEventHandler } from 'svelte/elements';
+  import { cubicInOut } from 'svelte/easing';
+  import { fade, slide, type FadeParams } from 'svelte/transition';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
   import { Alert, Confirm, Dialog } from '$lib/components';
@@ -19,6 +20,30 @@
   let menuSticker: Sticker | null = null;
 
   let flippedStickers = new Set<number>();
+  const stickerFadeInDuration = 1000;
+  
+  // Stickers should only fade in after opening a packet.
+  // The 3 stickers from the packet will be at the top.
+  const getFadeInParams = (index: number): FadeParams => {
+
+    if (index <= 2) {
+      // Stagger the transitions
+      return {
+        delay: index * stickerFadeInDuration,
+        duration: stickerFadeInDuration,
+        easing: cubicInOut,
+      }
+    } else {
+      // There might be an extra new sticker if the user received a sticker
+      // from a friend but hadn't refreshed the page yet. This sticker will
+      // not be faded in because we only want to fade in the stickers from
+      // the packet.
+      return {
+        delay: 0,
+        duration: 0,
+      }
+    }
+  }
 
   let tradeDialog: Dialog;
   let tradeOwnedStickerId: number | null | undefined;
@@ -162,7 +187,7 @@
 
 {:else}
 
-  <div class="packets-info">
+  <div class="packets-info" in:slide={{ delay: (3 * stickerFadeInDuration) + 400 }}>
     <p>Next packet</p>
     <Countdown countdownTo={data.nextPacket} />
   </div>
@@ -170,8 +195,8 @@
 {/if}
 
 <div class="deck">
-  {#each data.deck as sticker (sticker.ownedStickerId)}
-    <div class="sticker-wrapper">
+  {#each data.deck as sticker, index (sticker.ownedStickerId)}
+    <div class="sticker-wrapper" in:fade={getFadeInParams(index)}>
       <button class="sticker two-sided" class:flipped={flippedStickers.has(sticker.ownedStickerId)} on:click={() => openMenu(sticker)}>
         <div class="front" class:shiny={sticker.isShiny}>
           <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
