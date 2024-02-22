@@ -10,6 +10,7 @@
   .wrapper {
     max-inline-size: 1000px;
     margin-inline: auto;
-    padding: 1.5rem;
+    padding-block: 2rem;
+    padding-inline: 1.5rem;
   }
 </style>

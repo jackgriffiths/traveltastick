@@ -60,7 +60,7 @@
     const verificationResponse = await postJson("/api/auth/complete-credential-creation", registration);
 
     if (verificationResponse.ok) {
-      alert.show("Success", "A new passkey has been created on your device.");
+      alert.show("Success", "A new passkey has been created for your account.");
       await invalidateAll();
     } else {
       alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your passkey. Please try again."));
@@ -92,22 +92,29 @@
   <section id="section-credentials">
     <h2>Passkeys</h2>
   
-    <div class="credentials">
-      {#each data.credentials as credential, index}
-        <div class="credential">
+    <ul class="credentials">
+      {#each data.credentials as credential, index (credential.credentialId)}
+        <li class="credential">
           <p>Passkey #{index + 1}</p>
-          <p>Created on {credential.createdUtc.toLocaleString()}</p>
-          <p>Last used on {credential.lastUsedUtc.toLocaleString()}</p>
-          <p>Backed up? {credential.isBackedUp ? "Yes" : "No"}</p>
+          <p>Created on {credential.createdUtc.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p>
+          <p>Last used on {credential.lastUsedUtc.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p>
+
+          {#if credential.credentialId === data.currentCredentialId}
+            <p class="italic">This device is logged in using this passkey.</p>
+          {/if}
+
+          {#if credential.isBackedUp}
+            <p class="italic">Synced by your passkey provider.</p>
+          {/if}
   
           {#if canDeleteCredentials}
             <button on:click={() => confirmDeleteCredential(credential.credentialId)}>
               🗑️ Delete
             </button>
           {/if}
-        </div>
+        </li>
       {/each}
-    </div>
+      </ul>
 
     <button id="create-credential-button" on:click={() => createCredentialDialog.showModal()}>
       🔑 Create passkey
@@ -151,7 +158,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3rem;
+    gap: 4rem;
     max-width: fit-content;
     margin-inline: auto;
   }
@@ -169,32 +176,40 @@
 
   #section-credentials {
     & h2 {
-      margin-block-end: 0.75em;
+      margin-block-end: 1em;
     }
   }
 
   .credentials {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    list-style-type: none;
   }
 
   .credential {
-    border-radius: 4px;
-    border: 2px solid gray;
-    padding: 1rem;
+    &:not(:last-of-type) {
+      margin-block-end: 2.5rem;
+    }
 
-    & > :first-child {
-      font-size: 1.25rem;
+    & p {
+      --paragraph-spacing: 0.5em;
+
+      &:first-of-type {
+        font-weight: var(--fw-bold);
+        font-size: 1.1em;
+      }
+
+      &.italic {
+        font-style: italic;
+      }
     }
 
     & > button {
-      margin-block-start: 1.5rem;
+      margin-block-start: 1rem;
     }
   }
 
   #create-credential-button {
-    margin-block-start: 1.5rem;
+    inline-size: 100%;
+    margin-block-start: 3rem;
   }
 
   #create-credential-dialog-content {
