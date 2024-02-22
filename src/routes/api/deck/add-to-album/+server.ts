@@ -28,10 +28,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const isInAlbum = await db.isInAlbum({ stickerId: ownedSticker.stickerId, userId: ownedSticker.userId });
 
   if (isInAlbum) {
-    return error(400, "This sticker is already in your album.");
+    return json({ isDuplicate: true });
   }
 
   await db.addToAlbum(ownedStickerId);
 
-  return json({ success: true });
+  return json({ isDuplicate: false });
 }

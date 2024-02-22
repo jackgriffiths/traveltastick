@@ -35,6 +35,8 @@
 <style>
   p {
     margin: 0;
+    max-inline-size: 40ch;
+    text-wrap: pretty;
   }
 
   .title {

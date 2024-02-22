@@ -85,8 +85,15 @@
     });
 
     if (response.ok) {
-      await invalidateAll();
       menu.close();
+
+      const responseJson = await response.json();
+
+      if (responseJson.isDuplicate) {
+        alert.show("Oh!", "You've already got this sticker in your album. Maybe you can trade it for one you need.");
+      } else {
+        await invalidateAll();
+      }
     } else {
       alert.show("Error", await readError(response));
     }
