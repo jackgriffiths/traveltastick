@@ -8,7 +8,7 @@ export const POST: RequestHandler = async (event) => {
 
   if (session && session.userId !== null) {
     // User is already registered and should not be calling this endpoint.
-    error(400);
+    error(400, "Already authenticated");
   }
 
   const authenticationOptions = await getAuthenticationOptions();

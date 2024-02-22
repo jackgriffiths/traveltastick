@@ -2,7 +2,7 @@
   import { startRegistration } from "@simplewebauthn/browser";
   import { invalidateAll } from "$app/navigation";
   import { Alert, Confirm, Dialog } from "$lib/components";
-  import { post } from "$lib/json";
+  import { postJson, readError } from "$lib/fetch";
 
   export let data;
 
@@ -27,15 +27,14 @@
   }
 
   const deleteCredential = async (credentialId: string) => {
-    const response = await post("/api/auth/delete-credential", {
+    const response = await postJson("/api/auth/delete-credential", {
       credentialId: credentialId,
     });
 
     if (response.ok) {
       await invalidateAll();
     } else {
-      const error = (await response.json()).message;
-      alert.show("Error", error);
+      alert.show("Error", await readError(response));
     }
   }
 
@@ -49,24 +48,22 @@
   }
 
   const registerCredential = async (accountName: string) => {
-    const beginResponse = await post("/api/auth/begin-credential-creation", { userName: accountName });
+    const beginResponse = await postJson("/api/auth/begin-credential-creation", { userName: accountName });
     if (!beginResponse.ok) {
-      const error = (await beginResponse.json()).message;
-      alert.show("Error", error || "Something went wrong. Please try again.");
+      alert.show("Error", await readError(beginResponse));
       return;
     }
 
     const registrationOptions = await beginResponse.json();
     const registration = await startRegistration(registrationOptions);
 
-    const verificationResponse = await post("/api/auth/complete-credential-creation", registration);
+    const verificationResponse = await postJson("/api/auth/complete-credential-creation", registration);
 
     if (verificationResponse.ok) {
       alert.show("Success", "A new passkey has been created on your device.");
       await invalidateAll();
     } else {
-      const error = (await verificationResponse.json()).message;
-      alert.show("Error", error || "Something went wrong while creating your passkey. Please try again.");
+      alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your passkey. Please try again."));
     }
   }
 </script>

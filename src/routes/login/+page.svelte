@@ -2,7 +2,7 @@
   import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
   import { goto } from "$app/navigation";
   import { Alert } from "$lib/components";
-  import { post } from "$lib/json";
+  import { post, postJson, readError } from "$lib/fetch";
 
   let alert: Alert;
   let accountName: string;
@@ -13,23 +13,21 @@
       return;
     }
 
-    const beginResponse = await post("/api/auth/begin-registration", { userName: accountName });
+    const beginResponse = await postJson("/api/auth/begin-registration", { userName: accountName });
     if (!beginResponse.ok) {
-      const error = (await beginResponse.json()).message;
-      alert.show("Error", error || "Something went wrong. Please try again.");
+      alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
       return;
     }
 
     const registrationOptions = await beginResponse.json();
     const registration = await startRegistration(registrationOptions);
 
-    const verificationResponse = await post("/api/auth/complete-registration", registration);
+    const verificationResponse = await postJson("/api/auth/complete-registration", registration);
 
     if (verificationResponse.ok) {
       goto("/", { replaceState: true });
     } else {
-      const error = (await verificationResponse.json()).message;
-      alert.show("Error", error || "Something went wrong while creating your account. Please try again.");
+      alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your account. Please try again."));
     }
   }
 
@@ -39,23 +37,21 @@
       return;
     }
 
-    const beginResponse = await post("/api/auth/begin-authentication", undefined);
+    const beginResponse = await post("/api/auth/begin-authentication");
     if (!beginResponse.ok) {
-      const error = (await beginResponse.json()).message;
-      alert.show("Error", error || "Something went wrong. Please try again.");
+      alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
       return;
     }
 
     const authenticationOptions = await beginResponse.json();
     const authentication = await startAuthentication(authenticationOptions);
 
-    const verificationResponse = await post("/api/auth/complete-authentication", authentication);
+    const verificationResponse = await postJson("/api/auth/complete-authentication", authentication);
 
     if (verificationResponse.ok) {
       goto("/", { replaceState: true });
     } else {
-      const error = (await verificationResponse.json()).message;
-      alert.show("Error", error || "Something went wrong while logging you in. Please try again.");
+      alert.show("Error", await readError(verificationResponse, "Something went wrong while logging you in. Please try again."));
     }
   }
 </script>

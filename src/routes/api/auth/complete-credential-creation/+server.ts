@@ -7,37 +7,32 @@ export const POST: RequestHandler = async (event) => {
   const session = event.locals.session;
   
   if (!session || session.userId === null) {
-    error(401);
+    error(401, "Unauthenticated");
   }
 
   const challenge = await db.getAndClearChallenge(session.sessionId);
 
   if (!challenge) {
-    error(400);
+    error(400, "Something went wrong. Please try again.");
   }
 
   if (challenge.expires <= new Date()) {
-    error(400);
+    error(400, "Session timed out. Please try again.");
   }
 
-  const body: RegistrationResponseJSON | undefined = await event.request.json();
-
-  if (body === undefined) {
-    error(400);
-  }
-
+  const body: RegistrationResponseJSON = await event.request.json();
   const verification = await verifyCredentialRegistration(body, challenge.content);
 
   if (!verification) {
-    error(400);
+    error(400, "Invalid passkey");
   }
 
   if (!verification.verified) {
-    error(400);
+    error(400, "Invalid passkey");
   }
 
   if (!verification.registrationInfo) {
-    error(400);
+    error(400, "Invalid passkey");
   }
 
   const credential = {

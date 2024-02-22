@@ -13,40 +13,40 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const recipientUserId = data.recipientUserId;
 
   if (ownedStickerId == null || typeof ownedStickerId !== "number") {
-    return error(400, { message: "ID missing"});
+    return error(400, "ID missing");
   }
 
   if (Number.isNaN(ownedStickerId)) {
-    return error(400, { message: "ID is not a number"});
+    return error(400, "ID is not a number");
   }
 
   if (recipientUserId == null || typeof recipientUserId !== "number") {
-    return error(400, { message: "Recipient User ID missing"});
+    return error(400, "Recipient User ID missing");
   }
 
   if (Number.isNaN(recipientUserId)) {
-    return error(400, { message: "Recipient User ID is not a number"});
+    return error(400, "Recipient User ID is not a number");
   }
 
   const ownedSticker = await db.getOwnedSticker(ownedStickerId);
 
   if (ownedSticker == null || ownedSticker.userId !== userId) {
-    return error(400, { message: "Invalid ID"});
+    return error(400, "Invalid ID");
   }
 
   if (ownedSticker.isInAlbum) {
-    return error(400, { message: "Sticker is in album" });
+    return error(400, "This sticker is in your album and cannot be traded.");
   }
 
   if (userId === recipientUserId) {
-    return error(400, { message: "Sticker already belongs to user"});
+    return error(400, "Cannot send sticker to yourself.");
   }
 
   if (!await db.isValidUserId(recipientUserId)) {
-    return error(400, { message: "Could not send sticker to user" });
+    return error(400, "User ID not recognised. Please confirm with your friend what their ID is.");
   }
 
   await db.transfer(ownedStickerId, recipientUserId);
 
-  return json({ message: "success" });
+  return json({ success: true });
 }

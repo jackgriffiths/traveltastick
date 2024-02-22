@@ -4,7 +4,7 @@
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
   import { Alert, Confirm, Dialog } from '$lib/components';
-  import { post } from "$lib/json";
+  import { postJson, readError } from "$lib/fetch";
   import { getStickerImageUrl } from '$lib/stickers';
   import Countdown from './Countdown.svelte';
 
@@ -80,7 +80,7 @@
       return;
     }
 
-    const response = await post("/api/deck/add-to-album", {
+    const response = await postJson("/api/deck/add-to-album", {
       ownedStickerId: menuSticker.ownedStickerId,
     });
 
@@ -88,8 +88,7 @@
       await invalidateAll();
       menu.close();
     } else {
-      const message = (await response.json()).message;
-      alert.show("Error", message);
+      alert.show("Error", await readError(response));
     }
   }
 
@@ -115,7 +114,7 @@
   }
 
   const discardSticker = async (ownedStickerId: number) => {
-    const response = await post("/api/deck/discard", {
+    const response = await postJson("/api/deck/discard", {
       ownedStickerId: ownedStickerId,
     });
 
@@ -123,8 +122,7 @@
       await invalidateAll();
       menu.close();
     } else {
-      const message = (await response.json()).message;
-      alert.show("Error", message);
+      alert.show("Error", await readError(response));
     }
   }
 
@@ -150,7 +148,7 @@
   }
 
   const trade = async (ownedStickerId: number, userId: number) => {
-    const response = await post("/api/deck/trade", {
+    const response = await postJson("/api/deck/trade", {
       ownedStickerId: ownedStickerId,
       recipientUserId: userId,
     });
@@ -159,8 +157,7 @@
       await invalidateAll();
       menu.close();
     } else {
-      const message = (await response.json()).message;
-      alert.show("Error", message);
+      alert.show("Error", await readError(response));
     }
   }
 </script>

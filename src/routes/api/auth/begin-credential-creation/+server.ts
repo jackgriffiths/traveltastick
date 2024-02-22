@@ -9,20 +9,20 @@ export const POST: RequestHandler = async (event) => {
   const session = event.locals.session;
   
   if (!session || session.userId === null) {
-    error(401);
+    error(401, "Unauthenticated");
   }
 
   const userHandle = await db.getUserHandle(session.userId);
 
   if (!userHandle) {
-    error(400, { message: "User not found" });
+    error(400, "User not found");
   }
 
   const existingCredentialIds = (await db.getCredentialIds(session.userId))
     .map(id => isoBase64URL.toBuffer(id));
 
   const body = await event.request.json();
-  const userName = (body.userName as string | undefined) ?? "";
+  const userName = body?.userName?.toString() ?? "";
   const registrationOptions = await getCredentialRegistrationOptions(userHandle, userName, existingCredentialIds);
 
   const now = new Date();
