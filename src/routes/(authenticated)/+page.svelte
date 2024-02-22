@@ -71,7 +71,7 @@
 
   /* TODO: is there a different way to keep the size of the slots the same without setting a border (which for slots is just the same color as the background) */
   .sticker, .slot {
-    --border-width: 3cqi;
+    --border-width: 3.5cqi;
     border-width: var(--border-width);
     border-style: solid;
   }
@@ -79,7 +79,7 @@
   .sticker {
     border-color: var(--sticker-border-color);
     background: var(--sticker-background-color);
-    outline-width: 0.5cqi;
+    outline-width: 0.75cqi;
     outline-style: solid;
     outline-color: var(--sticker-image-outline-color);
     outline-offset: calc(-1 * var(--border-width));
