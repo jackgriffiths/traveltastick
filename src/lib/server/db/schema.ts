@@ -1,4 +1,10 @@
-import { boolean, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, customType, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+
+const bytea = customType<{ data: Uint8Array }>({
+  dataType() {
+    return "bytea";
+  },
+});
 
 export const registrations = pgTable("registrations", {
   registrationId: serial("registration_id").primaryKey(),
@@ -15,7 +21,7 @@ export const users = pgTable("users", {
 export const credentials = pgTable("credentials", {
   credentialId: text("credential_id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.userId),
-  publicKey: text("public_key").notNull(),
+  publicKey: bytea("public_key").notNull(),
   counter: integer("counter").notNull(),
   createdUtc: timestamp("created_utc").notNull(),
   lastUsedUtc: timestamp("last_used_utc").notNull(),

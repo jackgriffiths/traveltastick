@@ -155,7 +155,7 @@ export const createUser = async (sessionId: string, registrationId: number, user
       .insert(schema.credentials)
       .values({
         credentialId: credentialId,
-        publicKey: isoBase64URL.fromBuffer(userToCreate.credential.publicKey),
+        publicKey: userToCreate.credential.publicKey,
         userId: user.userId,
         counter: userToCreate.credential.counter,
         createdUtc: now,
@@ -225,7 +225,7 @@ export const saveUserAuthentication = async (sessionId: string, userId: number, 
 }
 
 export const getCredential = async (credentialId: Uint8Array) => {
-  const credential = await db.query.credentials.findFirst({
+  return await db.query.credentials.findFirst({
     columns: {
       userId: true,
       publicKey: true,
@@ -233,16 +233,6 @@ export const getCredential = async (credentialId: Uint8Array) => {
     },
     where: () => eq(schema.credentials.credentialId, isoBase64URL.fromBuffer(credentialId)),
   });
-
-  if (!credential) {
-    return undefined;
-  }
-
-  return {
-    userId: credential.userId,
-    publicKey: isoBase64URL.toBuffer(credential.publicKey),
-    counter: credential.counter,
-  }
 }
 
 export const getUserFromCredential = async (credentialIdBase64Url: string) => {
@@ -288,7 +278,7 @@ export const createCredential = async (userId: number, credential: { credentialI
     .insert(schema.credentials)
     .values({
       credentialId: isoBase64URL.fromBuffer(credential.credentialId),
-      publicKey: isoBase64URL.fromBuffer(credential.publicKey),
+      publicKey: credential.publicKey,
       userId: userId,
       counter: credential.counter,
       createdUtc: now,
