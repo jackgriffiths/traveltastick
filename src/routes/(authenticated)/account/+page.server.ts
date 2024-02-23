@@ -21,9 +21,9 @@ export const load: PageServerLoad = async (event) => {
 }
 
 export const actions: Actions = {
-  logout: (event) => {
+  logout: async (event) => {
     if (event.locals.session) {
-      endSession(event.cookies, event.locals.session.sessionId);
+      await endSession(event.cookies, event.locals.session.sessionId);
       throw redirect(302, "/login");
     }
   }
