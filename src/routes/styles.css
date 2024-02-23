@@ -35,11 +35,13 @@
     @media (prefers-color-scheme: light) {
       --body-background-color: hsl(200, 70%, 82%);
       --body-text-color: hsl(0, 0%, 0%);
+      --muted-text-color: hsl(0, 0%, 30%);
     }
 
     @media (prefers-color-scheme: dark) {
       --body-background-color: hsl(200, 55%, 10%);
       --body-text-color: hsl(0, 0%, 85%);
+      --muted-text-color: hsl(0, 0%, 60%);
     }
 
     background: var(--body-background-color);
@@ -63,6 +65,9 @@
 
 @layer app {
   :root {
+    --page-gutter: 1.5rem;
+    --max-inline-content-size: 65rem;
+
     --sticker-border-color: hsl(0, 0%, 95%);
     --sticker-background-color: var(--sticker-border-color);
     --sticker-image-aspect-ratio: 640 / 427;
@@ -77,6 +82,11 @@
 
   html {
     scrollbar-gutter: stable;
+  }
+
+  html, body {
+    block-size: 100vh;
+    block-size: 100dvh;
   }
 
   a {

@@ -60,13 +60,12 @@
   <title>Login | Traveltastick</title>
 </svelte:head>
 
-
 <div class="content">
   <h1>Traveltastick</h1>
 
   <ul class="features">
     <li>Collect stickers of famous landmarks</li>
-    <li>Open a sticker packet every day</li>
+    <li>Open a packet of stickers every day</li>
     <li>Trade stickers with your friends</li>
   </ul>
 
@@ -89,7 +88,9 @@
 <style>
   .content {
     margin-inline: auto;
-    max-inline-size: 35ch;
+    max-inline-size: 40ch;
+    padding-block: 2rem;
+    padding-inline: var(--page-gutter);
     display: flex;
     flex-direction: column;
     align-items: stretch;

@@ -1,7 +1,9 @@
 <nav>
-  <a href="/">Album</a>
-  <a href="/deck">Deck</a>
-  <a href="/account">Account</a>
+  <div class="links">
+    <a href="/">Album</a>
+    <a href="/deck">Deck</a>
+    <a href="/account">Account</a>
+  </div>
 </nav>
 
 <main>
@@ -10,11 +12,23 @@
 
 <style>
   nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    column-gap: 2rem;
-    row-gap: 1rem;
-    margin-block-end: 2rem;
+    padding-block: 2rem;
+    padding-inline: var(--page-gutter);
+
+    & > .links {
+      max-inline-size: var(--max-inline-content-size);
+      margin-inline: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      column-gap: 2rem;
+      row-gap: 1rem;
+    }
+  }
+  
+  main {
+    max-inline-size: var(--max-inline-content-size);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
   }
 </style>
