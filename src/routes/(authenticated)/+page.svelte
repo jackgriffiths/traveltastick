@@ -14,12 +14,9 @@
 <div class="album">
   {#each data.stickers as sticker}
     <div class="album-row">
-      <div class="info">
-        <h2>{sticker.title}</h2>
-        <p>{sticker.location}</p>
-        <p>{sticker.description}</p>
-      </div>
-  
+      <h2>{sticker.title}</h2>
+      <p>{sticker.location}</p>
+
       {#if stickersInAlbum.has(sticker.stickerId)}
         <div class="sticker-wrapper">
           <div class="sticker" class:shiny={sticker.isShiny}>
@@ -35,6 +32,8 @@
           </div>
         </div>
       {/if}
+
+      <p class="description">{sticker.description}</p>
     </div>
   {/each}
 </div>
@@ -53,20 +52,48 @@
 
     & > .album-row {
       display: grid;
-      row-gap: 1rem;
 
-      & h2 {
+      & > h2 {
         font-size: 1.25rem;
         font-weight: var(--fw-bold);
+      }
+
+      & > :is(.sticker-wrapper, .slot-wrapper) {
+        margin-block: 1rem;
       }
     }
   }
 
   .sticker-wrapper, .slot-wrapper {
+    align-self: flex-start;
     justify-self: start;
     width: 100%;
     max-width: 350px;
     container-type: inline-size;
+  }
+
+  /* There might be a bug with Svelte/Vite, because nesting wasn't working inside a container query */
+  @container album (width >= 80ch) {
+    .album > .album-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 1.5rem;
+    }
+
+    .album > .album-row > :is(h2, p) {
+      grid-column: 2;
+      justify-self: start;
+    }
+
+    .album > .album-row > .description {
+      margin-block-start: 0.75rem;
+    }
+
+    .album > .album-row > :is(.sticker-wrapper, .slot-wrapper) {
+      grid-row: 1 / span 4;
+      grid-column: 1;
+      margin-block: 0;
+      justify-self: end;
+    }
   }
 
   /* TODO: is there a different way to keep the size of the slots the same without setting a border (which for slots is just the same color as the background) */
@@ -137,25 +164,6 @@
       @media (prefers-color-scheme: dark) {
         color: var(--body-background-color);
       }
-    }
-  }
-
-  @container album (width >= 600px) {
-    .album-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 1.5rem;
-    }
-
-    .album-row .info {
-      grid-row: 1;
-      grid-column: 2;
-      justify-self: start;
-    }
-
-    .album-row :is(.sticker-wrapper, .slot-wrapper) {
-      grid-row: 1;
-      grid-column: 1;
-      justify-self: end;
     }
   }
 </style>
