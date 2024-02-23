@@ -135,7 +135,7 @@
       <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
 
       <div class="buttons">
-        <button type="submit" value="cancel" formnovalidate>Cancel</button>
+        <button type="button" on:click={() => createCredentialDialog.close("cancel")}>Cancel</button>
         <button type="submit" value="create">🔑 Create passkey</button>
       </div>
     </form>

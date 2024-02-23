@@ -253,7 +253,7 @@
       </div>
   
       <div class="trade-actions">
-        <button type="submit" formnovalidate>Cancel</button>
+        <button type="button" on:click={() => tradeDialog.close("cancel")}>Cancel</button>
         <button type="submit" value="confirm">📩 Send</button>
       </div>
     </form>
