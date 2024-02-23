@@ -16,7 +16,7 @@ export const getAuthenticationOptions = async () => {
 
 export const verifyAuthentication = async (authentication: AuthenticationResponseJSON, expectedChallenge: string) => {
   try {
-    const credentialId = isoBase64URL.toBuffer(authentication.id);
+    const credentialId = authentication.id;
     const credential = await db.getCredential(credentialId);
   
     if (!credential) {
@@ -30,7 +30,7 @@ export const verifyAuthentication = async (authentication: AuthenticationRespons
       expectedChallenge: expectedChallenge,
       requireUserVerification: false,
       authenticator: {
-        credentialID: credentialId,
+        credentialID: isoBase64URL.toBuffer(credentialId),
         credentialPublicKey: credential.publicKey,
         counter: credential.counter,
       }

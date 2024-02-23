@@ -3,7 +3,6 @@ import { getCredentialRegistrationOptions } from "$lib/server/auth/registration"
 import { addMilliseconds } from "$lib/dates";
 import * as db from "$lib/server/db";
 import { setSessionChallenge } from "$lib/server/sessions";
-import { isoBase64URL } from "@simplewebauthn/server/helpers";
 
 export const POST: RequestHandler = async (event) => {
   const session = event.locals.session;
@@ -18,8 +17,7 @@ export const POST: RequestHandler = async (event) => {
     error(400, "User not found");
   }
 
-  const existingCredentialIds = (await db.getCredentialIds(session.userId))
-    .map(id => isoBase64URL.toBuffer(id));
+  const existingCredentialIds = await db.getCredentialIds(session.userId);
 
   const body = await event.request.json();
   const userName = body?.userName?.toString() ?? "";

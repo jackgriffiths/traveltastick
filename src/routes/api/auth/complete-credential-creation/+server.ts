@@ -1,3 +1,4 @@
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import type { RegistrationResponseJSON } from "@simplewebauthn/types";
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 import { verifyCredentialRegistration } from "$lib/server/auth/registration";
@@ -36,7 +37,7 @@ export const POST: RequestHandler = async (event) => {
   }
 
   const credential = {
-    credentialId: verification.registrationInfo.credentialID,
+    credentialId: isoBase64URL.fromBuffer(verification.registrationInfo.credentialID),
     publicKey: verification.registrationInfo.credentialPublicKey,
     counter: verification.registrationInfo.counter,
     canBeBackedUp: verification.registrationInfo.credentialDeviceType === "multiDevice",

@@ -1,5 +1,6 @@
-import { error, json, type RequestHandler } from "@sveltejs/kit";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/types";
+import { error, json, type RequestHandler } from "@sveltejs/kit";
 import { verifyAuthentication } from "$lib/server/auth/authentication";
 import * as db from "$lib/server/db";
 
@@ -34,7 +35,7 @@ export const POST: RequestHandler = async (event) => {
   const authenticator = verification.result.authenticationInfo;
 
   const credential = {
-    credentialId: authenticator.credentialID,
+    credentialId: isoBase64URL.fromBuffer(authenticator.credentialID),
     counter: authenticator.newCounter,
     canBeBackedUp: authenticator.credentialDeviceType === "multiDevice",
     isBackedUp: authenticator.credentialBackedUp,
