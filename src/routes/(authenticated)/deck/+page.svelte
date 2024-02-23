@@ -109,9 +109,12 @@
     menu.close();
 
     confirm.show({
+      titleIcon: null,
       title: "Discard",
       message: "Are you sure you want to discard this sticker?",
-      confirmButtonText: "🗑️ Discard",
+      confirmButtonIcon: "🗑️",
+      confirmButtonText: "Discard",
+      cancelButtonIcon: null,
       cancelButtonText: "Cancel",
       onConfirm: async () => {
         await discardSticker(ownedStickerId);
@@ -220,23 +223,23 @@
 <Dialog bind:this={menu} on:close={onMenuClosed}>
   <div id="menu-dialog-content">
     <button type="button" on:click={() => menu.close()}>
-      ✖️ Cancel
+      <span aria-hidden="true">✖️</span> Cancel
     </button>
 
     <button type="button" on:click={flipSticker}>
-      🙃 Flip sticker
+      <span aria-hidden="true">🙃</span> Flip sticker
     </button>
 
     <button type="button" on:click={addStickerToAlbum}>
-      ✅ Add to album
+      <span aria-hidden="true">✅</span> Add to album
     </button>
 
     <button type="button" on:click={showTradeDialog}>
-      🤝 Send to a friend
+      <span aria-hidden="true">🤝</span> Send to a friend
     </button>
 
     <button type="button" on:click={confirmDiscardSticker}>
-      🗑️ Discard
+      <span aria-hidden="true">🗑️</span> Discard
     </button>
   </div>
 </Dialog>
@@ -253,8 +256,12 @@
       </div>
   
       <div class="trade-actions">
-        <button type="button" on:click={() => tradeDialog.close("cancel")}>Cancel</button>
-        <button type="submit" value="confirm">📩 Send</button>
+        <button type="button" on:click={() => tradeDialog.close("cancel")}>
+          Cancel
+        </button>
+        <button type="submit" value="confirm">
+          <span aria-hidden="true">📩</span> Send
+        </button>
       </div>
     </form>
   </div>

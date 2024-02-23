@@ -17,9 +17,12 @@
 
   const confirmDeleteCredential = (credentialId: string) => {
     confirm.show({
-      title: "⚠️ Warning",
+      titleIcon: "⚠️",
+      title: "Warning",
       message: "Are you sure you want to delete this passkey? Any devices logged in using this passkey will be logged out. You will not be able to use this passkey to log in to your account again.",
-      confirmButtonText: "⚠️ Delete",
+      confirmButtonIcon: "⚠️",
+      confirmButtonText: "Delete",
+      cancelButtonIcon: null,
       cancelButtonText: "Cancel",
       onConfirm: async () => await deleteCredential(credentialId),
       onCancel: null,
@@ -84,7 +87,7 @@
 
     <form method="post" action="?/logout">
       <button type="submit">
-        👋 Logout
+        <span aria-hidden="true">👋</span> Logout
       </button>
     </form>
   </section>
@@ -109,7 +112,7 @@
   
           {#if canDeleteCredentials}
             <button on:click={() => confirmDeleteCredential(credential.credentialId)}>
-              🗑️ Delete
+              <span aria-hidden="true">🗑️</span> Delete
             </button>
           {/if}
         </li>
@@ -117,7 +120,7 @@
       </ul>
 
     <button id="create-credential-button" on:click={() => createCredentialDialog.showModal()}>
-      🔑 Create passkey
+      <span aria-hidden="true">🔑</span> Create passkey
     </button>
   </section>
 </div>
@@ -135,8 +138,12 @@
       <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
 
       <div class="buttons">
-        <button type="button" on:click={() => createCredentialDialog.close("cancel")}>Cancel</button>
-        <button type="submit" value="create">🔑 Create passkey</button>
+        <button type="button" on:click={() => createCredentialDialog.close("cancel")}>
+          Cancel
+        </button>
+        <button type="submit" value="create">
+          <span aria-hidden="true">🔑</span> Create passkey
+        </button>
       </div>
     </form>
   </div>
