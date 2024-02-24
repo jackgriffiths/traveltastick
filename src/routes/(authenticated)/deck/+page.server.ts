@@ -7,7 +7,7 @@ export const load: PageServerLoad = async (event) => {
   const userId = event.locals.session?.userId ?? null;
 
   if (userId === null) {
-    throw redirect(302, "/login");
+    throw redirect(302, "/sign-in");
   }
 
   const now = new Date();

@@ -7,7 +7,7 @@
   export let data;
 
   // Users should only be able to delete credentials if they have
-  // an alternative credential that they could log in with.
+  // an alternative credential that they could sign in with.
   $: canDeleteCredentials = data.credentials.length >= 2;
 
   let alert: Alert;
@@ -20,7 +20,7 @@
     confirm.show({
       titleIcon: "⚠️",
       title: "Warning",
-      message: "Are you sure you want to delete this passkey? Any devices logged in using this passkey will be logged out. You will not be able to use this passkey to log in to your account again.",
+      message: "Are you sure you want to delete this passkey? Any devices signed in using this passkey will be signed out. You will not be able to use this passkey to sign in to your account again.",
       confirmButtonIcon: "⚠️",
       confirmButtonText: "Delete",
       cancelButtonIcon: null,
@@ -105,9 +105,9 @@
       {data.userId}
     </p>
 
-    <form method="post" action="?/logout">
+    <form method="post" action="?/signOut">
       <button type="submit">
-        <span aria-hidden="true">👋</span> Logout
+        <span aria-hidden="true">👋</span> Sign out
       </button>
     </form>
   </section>
@@ -123,7 +123,7 @@
           <p>Last used on {credential.lastUsedUtc.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</p>
 
           {#if credential.credentialId === data.currentCredentialId}
-            <p class="italic">This device is logged in using this passkey.</p>
+            <p class="italic">This device is signed in using this passkey.</p>
           {/if}
 
           {#if credential.isBackedUp}
@@ -159,7 +159,7 @@
     <form method="dialog">
       <label for="account-name">Account name</label>
       <input id="account-name" type="text" required autocomplete="off" bind:value={accountName} />
-      <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
+      <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when signing in.</p>
 
       <div class="buttons">
         <button type="button" on:click={() => createCredentialDialog.close("cancel")}>

@@ -25,9 +25,9 @@ export const POST: RequestHandler = async (event) => {
 
   if (credentialId === sessionCredentialId) {
     // Users cannot delete the credential that they are using because we can't be sure
-    // that they still have access to an alternative credential to log in with in the
+    // that they still have access to an alternative credential to sign in with in the
     // future.
-    error(400, "Before you can delete this passkey, you need to log in with a different passkey.");
+    error(400, "Before you can delete this passkey, you need to sign in with a different passkey.");
   }
 
   await db.deleteCredential(credentialId);

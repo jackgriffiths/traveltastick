@@ -7,7 +7,7 @@ export const load: PageServerLoad = async (event) => {
   const session = event.locals.session;
 
   if (session === null || session.userId === null) {
-    throw redirect(302, "/login");
+    throw redirect(302, "/sign-in");
   }
 
   const credentials = await db.getCredentialDetails(session.userId);
@@ -21,10 +21,10 @@ export const load: PageServerLoad = async (event) => {
 }
 
 export const actions: Actions = {
-  logout: async (event) => {
+  signOut: async (event) => {
     if (event.locals.session) {
       await endSession(event.cookies, event.locals.session.sessionId);
-      throw redirect(302, "/login");
+      throw redirect(302, "/sign-in");
     }
   }
 }

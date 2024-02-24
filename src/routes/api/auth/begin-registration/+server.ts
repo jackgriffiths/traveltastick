@@ -9,7 +9,7 @@ export const POST: RequestHandler = async (event) => {
   
   if (session && session.userId !== null) {
     // User is already registered and should not be calling this endpoint.
-    error(400, "Please log out before creating a new account.");
+    error(400, "Please sign out before creating a new account.");
   }
 
   const registration = await getOrCreateAccountRegistration(session?.registrationId ?? null);

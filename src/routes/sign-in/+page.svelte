@@ -7,7 +7,7 @@
   let alert: Alert;
   let accountName: string;
 
-  let isBusy = false; // Creating account or logging in
+  let isBusy = false; // Creating account or signing in
   let isCreatingAccount = false;
 
   const createAccount = async () => {
@@ -55,7 +55,7 @@
     }
   }
 
-  const login = async () => {
+  const signIn = async () => {
     if (!browserSupportsWebAuthn()) {
       alert.show("Not supported", "Your browser does not support passkeys. Please try a different browser.");
       return;
@@ -82,15 +82,15 @@
       if (verificationResponse.ok) {
         // Wrap this in a try catch just in case navigation fails.
         // It's important to let the user know that they have
-        // actually been logged in.
+        // actually been signed in.
         try {
           await goto("/", { replaceState: true });
         } catch {
           // Once the authenticated user refreshes, they'll be redirected to the home page.
-          alert.show("Logged in", "Please refresh the page.")
+          alert.show("Signed in", "Please refresh the page.")
         }
       } else {
-        alert.show("Error", await readError(verificationResponse, "Something went wrong while logging you in. Please try again."));
+        alert.show("Error", await readError(verificationResponse, "Something went wrong while signing you in. Please try again."));
       }
     } finally {
       isBusy = false;
@@ -99,7 +99,7 @@
 </script>
 
 <svelte:head>
-  <title>Login | Traveltastick</title>
+  <title>Sign in | Traveltastick</title>
 </svelte:head>
 
 <div class="content">
@@ -111,8 +111,8 @@
     <li>Trade stickers with your friends</li>
   </ul>
 
-  <button on:click={login}>
-    Log in
+  <button on:click={signIn}>
+    Sign in
   </button>
 
   <h2>Don't have an account?</h2>
@@ -120,7 +120,7 @@
   <form on:submit={createAccount}>
     <label for="name">Account name</label>
     <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
-    <p class="help-text">You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
+    <p class="help-text">You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when signing in.</p>
     <button type="submit">Create account</button>
     {#if isCreatingAccount}
       <p class="wait-text">Waiting for passkey...</p>
