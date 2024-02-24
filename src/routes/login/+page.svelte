@@ -7,27 +7,51 @@
   let alert: Alert;
   let accountName: string;
 
+  let isBusy = false; // Creating account or logging in
+  let isCreatingAccount = false;
+
   const createAccount = async () => {
     if (!browserSupportsWebAuthn()) {
       alert.show("Not supported", "Your browser does not support passkeys. Please try a different browser.");
       return;
     }
 
-    const beginResponse = await postJson("/api/auth/begin-registration", { userName: accountName });
-    if (!beginResponse.ok) {
-      alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
+    if (isBusy) {
       return;
     }
 
-    const registrationOptions = await beginResponse.json();
-    const registration = await startRegistration(registrationOptions);
+    isBusy = true;
+    isCreatingAccount = true;
 
-    const verificationResponse = await postJson("/api/auth/complete-registration", registration);
+    try {
+      const beginResponse = await postJson("/api/auth/begin-registration", { userName: accountName });
+      if (!beginResponse.ok) {
+        alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
+        return;
+      }
 
-    if (verificationResponse.ok) {
-      goto("/", { replaceState: true });
-    } else {
-      alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your account. Please try again."));
+      const registrationOptions = await beginResponse.json();
+      const registration = await startRegistration(registrationOptions);
+      const verificationResponse = await postJson("/api/auth/complete-registration", registration);
+
+      if (verificationResponse.ok) {
+        // Wrap this in a try catch just in case navigation fails.
+        // It's important to let the user know that actually an
+        // account was successfully created.
+        try {
+          await goto("/", { replaceState: true });
+        } catch (e) {
+          // Once the authenticated user refreshes, they'll be redirected to the home page.
+          alert.show("Account created", "Please refresh the page.");
+        }
+      } else {
+        alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your account. Please try again."));
+      }
+    } catch {
+      alert.show("Failed", "Could not create account.");
+    } finally {
+      isCreatingAccount = false;
+      isBusy = false;
     }
   }
 
@@ -37,21 +61,39 @@
       return;
     }
 
-    const beginResponse = await post("/api/auth/begin-authentication");
-    if (!beginResponse.ok) {
-      alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
+    if (isBusy) {
       return;
     }
 
-    const authenticationOptions = await beginResponse.json();
-    const authentication = await startAuthentication(authenticationOptions);
+    isBusy = true;
 
-    const verificationResponse = await postJson("/api/auth/complete-authentication", authentication);
-
-    if (verificationResponse.ok) {
-      goto("/", { replaceState: true });
-    } else {
-      alert.show("Error", await readError(verificationResponse, "Something went wrong while logging you in. Please try again."));
+    try {
+      const beginResponse = await post("/api/auth/begin-authentication");
+      if (!beginResponse.ok) {
+        alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
+        return;
+      }
+  
+      const authenticationOptions = await beginResponse.json();
+      const authentication = await startAuthentication(authenticationOptions);
+  
+      const verificationResponse = await postJson("/api/auth/complete-authentication", authentication);
+  
+      if (verificationResponse.ok) {
+        // Wrap this in a try catch just in case navigation fails.
+        // It's important to let the user know that they have
+        // actually been logged in.
+        try {
+          await goto("/", { replaceState: true });
+        } catch {
+          // Once the authenticated user refreshes, they'll be redirected to the home page.
+          alert.show("Logged in", "Please refresh the page.")
+        }
+      } else {
+        alert.show("Error", await readError(verificationResponse, "Something went wrong while logging you in. Please try again."));
+      }
+    } finally {
+      isBusy = false;
     }
   }
 </script>
@@ -78,8 +120,11 @@
   <form on:submit={createAccount}>
     <label for="name">Account name</label>
     <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
-    <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
+    <p class="help-text">You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when logging in.</p>
     <button type="submit">Create account</button>
+    {#if isCreatingAccount}
+      <p class="wait-text">Waiting for passkey...</p>
+    {/if}
   </form>
 </div>
 
@@ -142,10 +187,14 @@
       inline-size: 100%;
     }
 
-    & p {
-      margin-block-start: 0.5rem;
-      margin-block-end: 1.5rem;
+    & .help-text {
+      margin-block: 0.5rem 1.5rem;
       text-wrap: pretty;
+    }
+
+    & .wait-text {
+      margin-block-start: 0.5rem;
+      text-align: center;
     }
   }
 </style>

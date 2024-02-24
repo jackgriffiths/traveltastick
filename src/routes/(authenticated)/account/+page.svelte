@@ -14,6 +14,7 @@
   let confirm: Confirm;
   let createCredentialDialog: Dialog;
   let accountName = "";
+  let isCreatingCredential = false;
 
   const confirmDeleteCredential = (credentialId: string) => {
     confirm.show({
@@ -41,6 +42,14 @@
     }
   }
 
+  const beginCreateCredential = () => {
+    if (isCreatingCredential) {
+      return;
+    }
+
+    createCredentialDialog.showModal();
+  } 
+
   const onCreateCredentialDialogClosed = async (e: CustomEvent<{ returnValue: string }>) => {
     const name = accountName;
     accountName = "";
@@ -51,22 +60,33 @@
   }
 
   const registerCredential = async (accountName: string) => {
-    const beginResponse = await postJson("/api/auth/begin-credential-creation", { userName: accountName });
-    if (!beginResponse.ok) {
-      alert.show("Error", await readError(beginResponse));
+    if (isCreatingCredential) {
       return;
     }
+  
+    isCreatingCredential = true;
 
-    const registrationOptions = await beginResponse.json();
-    const registration = await startRegistration(registrationOptions);
+    try {
+      const beginResponse = await postJson("/api/auth/begin-credential-creation", { userName: accountName });
+      if (!beginResponse.ok) {
+        alert.show("Error", await readError(beginResponse));
+        return;
+      }
 
-    const verificationResponse = await postJson("/api/auth/complete-credential-creation", registration);
+      const registrationOptions = await beginResponse.json();
+      const registration = await startRegistration(registrationOptions);
+      const verificationResponse = await postJson("/api/auth/complete-credential-creation", registration);
 
-    if (verificationResponse.ok) {
-      alert.show("Success", "A new passkey has been created for your account.");
-      await invalidateAll();
-    } else {
-      alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your passkey. Please try again."));
+       if (verificationResponse.ok) {
+        alert.show("Success", "A new passkey has been created for your account.");
+        await invalidateAll();
+      } else {
+        alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your passkey. Please try again."));
+      }
+    } catch {
+      alert.show("Failed", "Could not finish adding a new passkey to your account.");
+    } finally {
+      isCreatingCredential = false;
     }
   }
 </script>
@@ -119,9 +139,13 @@
       {/each}
       </ul>
 
-    <button id="create-credential-button" on:click={() => createCredentialDialog.showModal()}>
-      <span aria-hidden="true">🔑</span> Create passkey
+    <button id="create-credential-button" on:click={beginCreateCredential}>
+      <span aria-hidden="true">🔑</span> Add passkey
     </button>
+
+    {#if isCreatingCredential}
+      <p id="create-credential-status">Adding passkey...</p>
+    {/if}
   </section>
 </div>
 
@@ -130,7 +154,7 @@
 
 <Dialog bind:this={createCredentialDialog} on:close={onCreateCredentialDialogClosed}>
   <div id="create-credential-dialog-content">
-    <p class="title">Create passkey</p>
+    <p class="title">Add passkey</p>
 
     <form method="dialog">
       <label for="account-name">Account name</label>
@@ -142,7 +166,7 @@
           Cancel
         </button>
         <button type="submit" value="create">
-          <span aria-hidden="true">🔑</span> Create passkey
+          <span aria-hidden="true">🔑</span> Add passkey
         </button>
       </div>
     </form>
@@ -217,6 +241,11 @@
   #create-credential-button {
     inline-size: 100%;
     margin-block-start: 3rem;
+  }
+
+  #create-credential-status {
+    margin-block-start: 0.5rem;
+    text-align: center;
   }
 
   #create-credential-dialog-content {
