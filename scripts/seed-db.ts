@@ -87,7 +87,7 @@ const stickers = [
     isShiny: false
   },
   {
-    title: "La Sagrada Familia",
+    title: "Sagrada Familia",
     location: "Spain",
     description: "This architectural masterpiece, designed by Antoni Gaudí, has been under construction since 1882 and is renowned for its intricate facades and towering spires. Once completed, the tallest spire will be 172.5 metres tall and dedicated to Jesus Christ.",
     isShiny: false
