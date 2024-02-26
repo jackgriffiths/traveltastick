@@ -182,7 +182,7 @@
 
   <form method="post" action="?/openPacket" class="packet-form" use:enhance>
     <button type="submit" class="open-packet-button">
-      <img src="/packet.png" alt="Packet" />
+      <img src="/packet.jpg" alt="Packet" />
     </button>
 
     {#if form && form.success == false}
@@ -301,7 +301,7 @@
     border-radius: 0;
     padding: 0;
     background: white;
-    border: 6cqi solid rgb(35, 56, 150);
+    border: none;
     outline-offset: 5px;
     animation: 5s wiggle linear infinite;
     box-sizing: content-box;
@@ -309,6 +309,7 @@
 
     & > img {
       width: 100%;
+      height: 100%;
       object-fit: cover;
     }
   }
