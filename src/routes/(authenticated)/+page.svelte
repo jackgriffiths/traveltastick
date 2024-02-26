@@ -141,8 +141,15 @@
   }
 
   .slot {
-    border-color: var(--sticker-background-color);
-    background: var(--sticker-background-color);
+    @media (prefers-color-scheme: light) {
+      --slot-color: var(--sticker-background-color);
+    }
+    @media (prefers-color-scheme: dark) {
+      --slot-color: hsl(0, 0%, 95%);
+    }
+
+    border-color: var(--slot-color);
+    background: var(--slot-color);
 
     & > .slot-number {
       aspect-ratio: var(--sticker-image-aspect-ratio);
