@@ -159,7 +159,7 @@
     <form method="dialog">
       <label for="account-name">Account name</label>
       <input id="account-name" type="text" required autocomplete="off" bind:value={accountName} />
-      <p>You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when signing in.</p>
+      <p>You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
 
       <div class="buttons">
         <button type="button" on:click={() => createCredentialDialog.close("cancel")}>

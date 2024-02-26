@@ -103,7 +103,7 @@
 </svelte:head>
 
 <div class="content">
-  <h1>Traveltastick</h1>
+  <h1>Travel<span class="italic">tastick</span></h1>
 
   <ul class="features">
     <li>Collect stickers of famous landmarks</li>
@@ -120,7 +120,7 @@
   <form on:submit={createAccount}>
     <label for="name">Account name</label>
     <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
-    <p class="help-text">You can choose any name you like - it doesn't need to be unique. The name is only saved on your device and it helps you select the right account when signing in.</p>
+    <p class="help-text">You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
     <button type="submit">Create account</button>
     {#if isCreatingAccount}
       <p class="wait-text">Waiting for passkey...</p>
@@ -147,7 +147,12 @@
   h1 {
     margin-block-end: 1.5rem;
     font-size: 2rem;
+    font-weight: bold;
     text-align: center;
+
+    & .italic {
+      font-style: italic;
+    }
   }
 
   @counter-style features-symbols {
