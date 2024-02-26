@@ -188,19 +188,29 @@
   .content {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4rem;
+    gap: 2rem;
     max-width: fit-content;
     margin-inline: auto;
   }
 
+  section {
+    background: var(--card-background-color);
+    padding-block: 1.25rem;
+    padding-inline: 1.5rem;
+    border-radius: 0.25rem;
+    inline-size: 100%;
+  }
+
   #section-user-id {
+    display: grid;
+
     & #user-id {
       font-size: 3rem;
       text-align: center;
     }
 
     & > form {
+      justify-self: center;
       margin-block-start: 2rem;
     }
   }

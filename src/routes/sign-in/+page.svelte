@@ -132,10 +132,13 @@
 
 <style>
   .content {
+    border-radius: 0.25rem;
+    margin-block-start: 2rem;
     margin-inline: auto;
     max-inline-size: 40ch;
     padding-block: 2rem;
     padding-inline: var(--page-gutter);
+    background: var(--card-background-color);
     display: flex;
     flex-direction: column;
     align-items: stretch;

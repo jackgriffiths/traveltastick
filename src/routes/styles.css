@@ -33,14 +33,16 @@
 
   body {
     @media (prefers-color-scheme: light) {
-      --body-background-color: hsl(200, 70%, 82%);
-      --body-text-color: hsl(0, 0%, 0%);
+      --body-background-color: hsl(200, 80%, 90%);
+      --body-text-color: hsl(0, 0%, 5%);
+      --card-background-color: hsl(0, 0%, 100%);
       --muted-text-color: hsl(0, 0%, 30%);
     }
 
     @media (prefers-color-scheme: dark) {
-      --body-background-color: hsl(200, 55%, 10%);
+      --body-background-color: hsl(200, 55%, 15%);
       --body-text-color: hsl(0, 0%, 85%);
+      --card-background-color: hsl(200, 70%, 11%);
       --muted-text-color: hsl(0, 0%, 60%);
     }
 
@@ -93,14 +95,14 @@
 
   button {
     @media (prefers-color-scheme: light) {
-      --btn-default-border-color: hsl(200, 70%, 40%);
-      --btn-default-background-color: hsl(0, 0%, 100%);
+      --btn-default-border-color: hsl(200, 20%, 50%);
+      --btn-default-background-color: hsl(200, 50%, 100%);
       --btn-default-text-color: hsl(0, 0%, 5%);
       --btn-hover-border-color: hsl(200, 70%, 40%);
-      --btn-hover-background-color: hsl(0, 0%, 95%);
+      --btn-hover-background-color: hsl(200, 50%, 97%);
       --btn-hover-text-color: hsl(0, 0%, 5%);
       --btn-pressed-border-color: hsl(200, 70%, 40%);
-      --btn-pressed-background-color: hsl(0, 0%, 90%);
+      --btn-pressed-background-color: hsl(200, 50%, 95%);
       --btn-pressed-text-color: hsl(0, 0%, 5%);
     }
 
@@ -118,7 +120,7 @@
 
     min-inline-size: 70px;
 
-    border-width: 1px;
+    border-width: 2px;
     border-radius: 4px;
     border-style: solid;
     border-color: var(--btn-default-border-color);
@@ -148,7 +150,7 @@
   textarea {
     @media (prefers-color-scheme: light) {
       --input-default-border-color: hsl(200, 60%, 50%);
-      --input-default-background-color: var(--body-background-color);
+      --input-default-background-color: hsl(0, 0%, 100%);
       --input-default-text-color: var(--body-text-color);
       --input-hover-border-color: var(--input-default-border-color);
       --input-hover-background-color: var(--input-default-background-color);
@@ -185,13 +187,13 @@
   dialog {
     @media (prefers-color-scheme: light) {
       --dialog-border-color: hsl(200, 70%, 40%);
-      --dialog-background-color: var(--body-background-color);
+      --dialog-background-color: hsl(0, 0%, 100%);
       --dialog-text-color: var(--body-text-color);
     }
 
     @media (prefers-color-scheme: dark) {
       --dialog-border-color: hsl(200, 55%, 5%);
-      --dialog-background-color: var(--body-background-color);
+      --dialog-background-color: hsl(200, 70%, 10%);
       --dialog-text-color: var(--body-text-color);
     }
 
