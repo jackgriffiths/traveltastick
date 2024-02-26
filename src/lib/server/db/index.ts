@@ -4,7 +4,7 @@ import postgres from "postgres";
 import { DATABASE_URL } from "$env/static/private";
 import * as schema from "$lib/server/db/schema";
 
-const connection = postgres(DATABASE_URL);
+const connection = postgres(DATABASE_URL, { ssl: "require" });
 const db = drizzle(connection, { schema });
 
 export const createRegistration = async (userHandle: string) => {
