@@ -68,16 +68,14 @@
     --page-gutter: 1.5rem;
     --max-inline-content-size: 65rem;
 
-    --sticker-border-color: hsl(0, 0%, 95%);
+    --sticker-border-color: hsl(0, 0%, 100%);
     --sticker-background-color: var(--sticker-border-color);
     --sticker-image-aspect-ratio: 640 / 427;
-    --sticker-image-outline-color: hsl(0, 0%, 40%);
     --sticker-back-background-color: hsl(0, 0%, 85%);
     --sticker-back-text-color: hsl(0, 0%, 0%);
 
     --shiny-sticker-color: hsl(0, 0%, 60%);
     --shiny-sticker-background-color: var(--shiny-sticker-color);
-    --shiny-sticker-image-outline-color: hsl(0, 0%, 50%);
   }
 
   html {

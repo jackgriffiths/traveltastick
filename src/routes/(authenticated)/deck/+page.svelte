@@ -362,8 +362,7 @@
     }
 
     & :is(.front, .back) {
-      --border-width: 3.5cqi;
-      border-width: var(--border-width);
+      border-width: 3.5cqi;
       border-style: solid;
     }
 
@@ -371,10 +370,6 @@
       inline-size: 100%;
       border-color: var(--sticker-border-color);
       background: var(--sticker-background-color);
-      outline-width: 0.75cqi;
-      outline-style: solid;
-      outline-color: var(--sticker-image-outline-color);
-      outline-offset: calc(-1 * var(--border-width));
 
       &.shiny {
         --shiny-sticker-highlight-color: hsl(0, 0%, 100%);
@@ -400,7 +395,6 @@
         border-image-source: var(--shiny-sticker-border-gradient);
         border-image-slice: 1;
         background: var(--shiny-sticker-background-color);
-        outline-color: var(--shiny-sticker-image-outline-color);
         animation: 3s shine ease-in-out alternate infinite;
       }
 
