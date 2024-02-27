@@ -30,5 +30,7 @@
 <style>
   p {
     font-size: 2rem;
+    font-family: var(--ff-monospace);
+    font-weight: var(--fw-bold);
   }
 </style>

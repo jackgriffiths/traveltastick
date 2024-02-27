@@ -26,6 +26,7 @@
 @layer typography {
   :root {
     --ff-normal: system-ui;
+    --ff-monospace: ui-monospace, "Courier New", monospace;
     --fw-normal: 400;
     --fw-bold: 700;
     --readable-text-max-inline-size: 70ch;
