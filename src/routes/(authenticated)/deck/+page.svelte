@@ -73,6 +73,8 @@
 
     // Force Svelte to update the UI
     flippedStickers = flippedStickers;
+
+    menu.close();
   }
 
   const addStickerToAlbum = async () => {
