@@ -24,6 +24,13 @@
       column-gap: 2rem;
       row-gap: 1rem;
     }
+
+    & a {
+      text-underline-offset: 0.25em;
+
+      /* Increase hit target */
+      padding: 0.5em;
+    }
   }
   
   main {
