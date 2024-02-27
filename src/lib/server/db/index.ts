@@ -1,10 +1,10 @@
 import { asc, eq, and, inArray, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { DATABASE_URL } from "$env/static/private";
+import { DATABASE_SSL_REQUIRED, DATABASE_URL } from "$env/static/private";
 import * as schema from "$lib/server/db/schema";
 
-const connection = postgres(DATABASE_URL, { ssl: "require" });
+const connection = postgres(DATABASE_URL, { ssl: DATABASE_SSL_REQUIRED === "true" ? "require" : "prefer" });
 const db = drizzle(connection, { schema });
 
 export const createRegistration = async (userHandle: string) => {
