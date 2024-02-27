@@ -100,6 +100,7 @@
 
 <svelte:head>
   <title>Sign in | Traveltastick</title>
+  <meta name="description" content="Collect and trade stickers of famous landmarks" />
 </svelte:head>
 
 <div class="content">
