@@ -12,7 +12,7 @@
 
 <style>
   nav {
-    padding-block: 2rem;
+    padding-block: 1.5rem;
     padding-inline: var(--page-gutter);
 
     & > .links {
