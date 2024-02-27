@@ -153,8 +153,9 @@
 
     & > .slot-number {
       aspect-ratio: var(--sticker-image-aspect-ratio);
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 3rem;
       font-weight: var(--fw-bold);
 
