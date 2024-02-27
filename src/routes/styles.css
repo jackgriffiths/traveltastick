@@ -35,14 +35,14 @@
     @media (prefers-color-scheme: light) {
       --body-background-color: hsl(200, 80%, 90%);
       --body-text-color: hsl(0, 0%, 5%);
-      --card-background-color: hsl(0, 0%, 100%);
+      --card-background-color: hsl(200, 80%, 98%);
       --muted-text-color: hsl(0, 0%, 30%);
     }
 
     @media (prefers-color-scheme: dark) {
-      --body-background-color: hsl(200, 55%, 15%);
+      --body-background-color: hsl(200, 70%, 11%);
       --body-text-color: hsl(0, 0%, 85%);
-      --card-background-color: hsl(200, 70%, 11%);
+      --card-background-color: hsl(200, 80%, 13%);
       --muted-text-color: hsl(0, 0%, 60%);
     }
 
@@ -95,26 +95,26 @@
 
   button {
     @media (prefers-color-scheme: light) {
-      --btn-default-border-color: hsl(200, 20%, 50%);
+      --btn-default-border-color: hsl(200, 30%, 50%);
       --btn-default-background-color: hsl(200, 50%, 100%);
       --btn-default-text-color: hsl(0, 0%, 5%);
-      --btn-hover-border-color: hsl(200, 70%, 40%);
-      --btn-hover-background-color: hsl(200, 50%, 97%);
+      --btn-hover-border-color: var(--btn-default-border-color);
+      --btn-hover-background-color: hsl(200, 50%, 95%);
       --btn-hover-text-color: hsl(0, 0%, 5%);
-      --btn-pressed-border-color: hsl(200, 70%, 40%);
-      --btn-pressed-background-color: hsl(200, 50%, 95%);
+      --btn-pressed-border-color: var(--btn-default-border-color);
+      --btn-pressed-background-color: hsl(200, 50%, 92%);
       --btn-pressed-text-color: hsl(0, 0%, 5%);
     }
 
     @media (prefers-color-scheme: dark) {
-      --btn-default-border-color: hsl(200, 55%, 18%);
-      --btn-default-background-color: hsl(200, 55%, 18%);
+      --btn-default-border-color: hsl(200, 80%, 20%);
+      --btn-default-background-color: hsl(200, 80%, 20%);
       --btn-default-text-color: hsl(0, 0%, 85%);
-      --btn-hover-border-color: hsl(200, 55%, 22%);
-      --btn-hover-background-color: hsl(200, 55%, 22%);
+      --btn-hover-border-color: hsl(200, 80%, 18%);
+      --btn-hover-background-color: hsl(200, 80%, 18%);
       --btn-hover-text-color: hsl(0, 0%, 85%);
-      --btn-pressed-border-color: hsl(200, 50%, 25%);
-      --btn-pressed-background-color: hsl(200, 50%, 25%);
+      --btn-pressed-border-color: hsl(200, 80%, 16%);
+      --btn-pressed-background-color: hsl(200, 80%, 16%);
       --btn-pressed-text-color: hsl(0, 0%, 85%);
     }
 
@@ -159,7 +159,7 @@
 
     @media (prefers-color-scheme: dark) {
       --input-default-border-color: hsl(200, 20%, 40%);
-      --input-default-background-color: var(--body-background-color);
+      --input-default-background-color: hsl(200, 80%, 12%);
       --input-default-text-color: var(--body-text-color);
       --input-hover-border-color: var(--input-default-border-color);
       --input-hover-background-color: var(--input-default-background-color);
@@ -187,15 +187,19 @@
   dialog {
     @media (prefers-color-scheme: light) {
       --dialog-border-color: hsl(200, 70%, 40%);
-      --dialog-background-color: hsl(0, 0%, 100%);
+      --dialog-background-color: var(--card-background-color);
       --dialog-text-color: var(--body-text-color);
     }
 
     @media (prefers-color-scheme: dark) {
-      --dialog-border-color: hsl(200, 55%, 5%);
-      --dialog-background-color: hsl(200, 70%, 10%);
+      --dialog-border-color: var(--body-background-color);
+      --dialog-background-color: var(--card-background-color);
       --dialog-text-color: var(--body-text-color);
     }
+
+    --dialog-border-color: var(--body-background-color);
+    --dialog-background-color: var(--card-background-color);
+    --dialog-text-color: var(--body-text-color);
 
     margin: auto;
     border-radius: 4px;

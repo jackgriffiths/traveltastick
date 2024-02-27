@@ -145,7 +145,7 @@
       --slot-color: var(--sticker-background-color);
     }
     @media (prefers-color-scheme: dark) {
-      --slot-color: hsl(0, 0%, 95%);
+      --slot-color: hsl(0, 0%, 85%);
     }
 
     border-color: var(--slot-color);
