@@ -121,7 +121,7 @@
 
     <form on:submit={createAccount}>
       <label for="name">Account name</label>
-      <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
+      <input id="name" name="name" type="text" bind:value={accountName} required autocomplete="given-name" />
       <p class="help-text">You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
       <button type="submit">Create account</button>
       {#if isCreatingAccount}

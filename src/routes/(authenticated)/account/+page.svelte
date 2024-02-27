@@ -158,7 +158,7 @@
 
     <form method="dialog">
       <label for="account-name">Account name</label>
-      <input id="account-name" type="text" required autocomplete="off" bind:value={accountName} />
+      <input id="account-name" name="name" type="text" required autocomplete="given-name" bind:value={accountName} />
       <p>You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
 
       <div class="buttons">
