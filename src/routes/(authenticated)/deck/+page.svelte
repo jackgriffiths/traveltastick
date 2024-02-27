@@ -376,30 +376,26 @@
       background: var(--sticker-background-color);
 
       &.shiny {
-        --shiny-sticker-highlight-color: hsl(0, 0%, 100%);
-        --shiny-sticker-border-gradient-start-angle: 30deg;
-        --shiny-sticker-border-gradient-angle-shift: 10deg;
+        --shiny-sticker-highlight-color: hsl(0, 0%, 80%);
+        --shiny-sticker-border-gradient-start-angle: 35deg;
+        --shiny-sticker-border-gradient-angle-shift: 20deg;
         --shiny-sticker-border-gradient-angle: var(--shiny-sticker-border-gradient-start-angle);
 
         --shiny-sticker-border-gradient: linear-gradient(
           var(--shiny-sticker-border-gradient-angle, 30deg),
-          var(--shiny-sticker-color) 17%,
-          var(--shiny-sticker-highlight-color) 22%,
-          var(--shiny-sticker-color) 27%,
-          var(--shiny-sticker-color) 32%,
-          var(--shiny-sticker-highlight-color) 37%,
-          var(--shiny-sticker-color) 42%,
-          var(--shiny-sticker-color) 62%,
-          var(--shiny-sticker-highlight-color) 67%,
-          var(--shiny-sticker-color) 72%,
-          var(--shiny-sticker-color) 86%,
-          var(--shiny-sticker-highlight-color) 89%,
-          var(--shiny-sticker-color) 92%);
+          var(--shiny-sticker-color) 0%,
+          var(--shiny-sticker-color) 10%,
+          var(--shiny-sticker-highlight-color) 33%,
+          var(--shiny-sticker-color) 45%,
+          var(--shiny-sticker-color) 66%,
+          var(--shiny-sticker-highlight-color) 77%,
+          var(--shiny-sticker-color) 90%,
+          var(--shiny-sticker-color) 95%);
 
         border-image-source: var(--shiny-sticker-border-gradient);
         border-image-slice: 1;
         background: var(--shiny-sticker-background-color);
-        animation: 3s shine ease-in-out alternate infinite;
+        animation: 8s shine ease-in-out alternate infinite;
       }
 
       & > img {
