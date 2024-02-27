@@ -297,6 +297,7 @@
 
   /* TODO: Nesting this inside .packet-form causes the animation keyframes to not be found. Why? */
   .packet-form button {
+    inline-size: 100%;
     cursor: pointer;
     border-radius: 0;
     padding: 0;
