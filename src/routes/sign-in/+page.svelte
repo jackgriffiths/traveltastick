@@ -103,45 +103,50 @@
 </svelte:head>
 
 <div class="content">
-  <h1>Travel<span class="italic">tastick</span></h1>
+  <section>
+    <h1>Travel<span class="italic">tastick</span></h1>
 
-  <ul class="features">
-    <li>Collect stickers of famous landmarks</li>
-    <li>Open a packet of stickers every day</li>
-    <li>Trade stickers with your friends</li>
-  </ul>
+    <ul class="features">
+      <li>Collect stickers of famous landmarks</li>
+      <li>Open a packet of stickers every day</li>
+      <li>Trade stickers with your friends</li>
+    </ul>
 
-  <button on:click={signIn}>
-    Sign in
-  </button>
+    <button on:click={signIn}>
+      Sign in
+    </button>
 
-  <h2>Don't have an account?</h2>
+    <h2>Don't have an account?</h2>
 
-  <form on:submit={createAccount}>
-    <label for="name">Account name</label>
-    <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
-    <p class="help-text">You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
-    <button type="submit">Create account</button>
-    {#if isCreatingAccount}
-      <p class="wait-text">Waiting for passkey...</p>
-    {/if}
-  </form>
+    <form on:submit={createAccount}>
+      <label for="name">Account name</label>
+      <input id="name" type="text" bind:value={accountName} required autocomplete="off" />
+      <p class="help-text">You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
+      <button type="submit">Create account</button>
+      {#if isCreatingAccount}
+        <p class="wait-text">Waiting for passkey...</p>
+      {/if}
+    </form>
+  </section>
 </div>
 
 <Alert bind:this={alert} />
 
 <style>
   .content {
-    border-radius: 0.25rem;
-    margin-block-start: 2rem;
-    margin-inline: auto;
-    max-inline-size: 40ch;
-    padding-block: 2rem;
     padding-inline: var(--page-gutter);
+  }
+
+  section {
+    max-inline-size: 40ch;
+    border-radius: 0.25rem;
+    margin-block-start: var(--page-gutter);
+    margin-inline: auto;
     background: var(--card-background-color);
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    padding: 1.5rem;
   }
 
   h1 {

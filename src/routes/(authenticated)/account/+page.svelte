@@ -195,8 +195,7 @@
 
   section {
     background: var(--card-background-color);
-    padding-block: 1.25rem;
-    padding-inline: 1.5rem;
+    padding: 1.5rem;
     border-radius: 0.25rem;
     inline-size: 100%;
   }
