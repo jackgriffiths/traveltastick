@@ -175,10 +175,10 @@
 </script>
 
 <svelte:head>
-  <title>Deck | Traveltastick</title>
+  <title>Stickers | Traveltastick</title>
 </svelte:head>
 
-<h1>Deck</h1>
+<h1>Stickers</h1>
 
 {#if data.canOpenPacket}
 
