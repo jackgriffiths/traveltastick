@@ -170,7 +170,7 @@
     margin-block-end: 1.5rem;
     list-style-type: features-symbols;
     list-style-position: outside;
-    padding-inline-start: 1.75em;
+    padding-inline-start: 2em;
 
     & li:not(:last-of-type) {
       margin-block-end: 0.5em;
