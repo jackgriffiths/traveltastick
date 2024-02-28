@@ -8,7 +8,8 @@ export const POST: RequestHandler = async (event) => {
 
   if (session && session.userId !== null) {
     // User is already registered and should not be calling this endpoint.
-    error(400, "Already authenticated");
+    // Refreshing the page should force a redirect to the home page.
+    error(400, "Already signed in. Please refresh the page.");
   }
 
   const authenticationOptions = await getAuthenticationOptions();
