@@ -21,8 +21,8 @@ const users = [
 
 const stickers = [
   {
-    title: "Planet Earth",
-    location: "Milky Way",
+    title: "Earth",
+    location: "Solar System",
     description: "Situated approximately 149,000,000 kilometres from the Sun, this planet is unique for being home to the only known life in the universe. Its atmosphere, abundant in oxygen and shielded by a magnetic field, creates the perfect conditions for sustaining life.",
     isShiny: true,
   },
