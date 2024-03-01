@@ -19,6 +19,17 @@ export const handle: Handle = async ({ event, resolve }) => {
     return Response.redirect(httpsUrl, 301);
   }
 
+  // Disable caching of all pages and data fetches.
+  // This Cache-Control header is already added to the data fetch
+  // responses by SvelteKit, but it specifying it here also means
+  // it is added to responses for HTML pages. Note that requests
+  // for static assets (images, CSS, JS) do not pass through this
+  // middleware so this Cache-Control header does not apply to those
+  // requests - SvelteKit handles their Cache-Control headers. 
+  event.setHeaders({
+    "Cache-Control": "private, no-store"  
+  })
+
   // Load the session details and pass the request on to SvelteKit for it to resolve.
   event.locals.session = await getSession(event.cookies);
   return resolve(event);
