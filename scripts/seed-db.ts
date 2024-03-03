@@ -317,7 +317,7 @@ const stickers = [
   {
     title: "Golden Gate Bridge",
     location: "United States",
-    description: "Spanning the strait that connects San Francisco Bay to the Pacific Ocean, this suspension bridge is renowned for its striking International Orange coluor. Completed in 1937, it measures approximately 2.7 kilometres in length and is one of the most photographed bridges in the world.",
+    description: "Spanning the strait that connects San Francisco Bay to the Pacific Ocean, this suspension bridge is renowned for its striking International Orange colour. Completed in 1937, it measures approximately 2.7 kilometres in length and is one of the most photographed bridges in the world.",
     isShiny: false
   },
   {
