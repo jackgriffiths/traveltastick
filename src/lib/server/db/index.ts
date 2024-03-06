@@ -1,4 +1,4 @@
-import { asc, eq, and, inArray, desc } from "drizzle-orm";
+import { asc, eq, and, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { DATABASE_SSL_REQUIRED, DATABASE_URL } from "$env/static/private";
@@ -306,19 +306,6 @@ export const getStickers = async () => {
       description: true,
       isShiny: true,
     },
-    orderBy: [asc(schema.stickers.number)]
-  });
-}
-
-export const getStickersByIds = async (ids: number[]) => {
-  return await db.query.stickers.findMany({
-    columns: {
-      stickerId: true,
-      number: true,
-      title: true,
-      location: true,
-    },
-    where: () => inArray(schema.stickers.stickerId, ids),
     orderBy: [asc(schema.stickers.number)]
   });
 }

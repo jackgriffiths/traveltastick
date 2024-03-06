@@ -48,7 +48,7 @@ export const actions: Actions = {
     }
 
     const packet = await generatePacket();
-    await db.addPacketToDeck(userId, packet.map(s => s.stickerId), now);
+    await db.addPacketToDeck(userId, packet, now);
 
     return {
       success: true,

@@ -38,7 +38,7 @@ export const generatePacket = async () => {
     }
   }
 
-  return await db.getStickersByIds(Array.from(packetStickersIds));
+  return Array.from(packetStickersIds);
 }
 
 const createStickerSampler = async () => {
