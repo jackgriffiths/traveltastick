@@ -254,7 +254,7 @@
     <form method="dialog">
       <div>
         <label for="user-id">User ID</label>
-        <input bind:value={tradeUserId} id="user-id" type="number" required min="1" autocomplete="off" />
+        <input bind:value={tradeUserId} id="user-id" type="number" inputmode="numeric" required min="1" autocomplete="off" />
       </div>
   
       <div class="trade-actions">
