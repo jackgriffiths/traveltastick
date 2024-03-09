@@ -1,5 +1,5 @@
 <script>
-  import { getStickerImageUrl } from '$lib/stickers';
+  import { getStickerHeadingId, getStickerImageUrl } from '$lib/stickers';
 
   export let data;
   $: stickersInAlbum = new Set(data.stickersInAlbum);
@@ -14,7 +14,9 @@
 <div class="album">
   {#each data.stickers as sticker}
     <div class="album-row">
-      <h2>{sticker.title}</h2>
+      <h2 id={getStickerHeadingId(sticker.title)}>
+        {sticker.title}
+      </h2>
       <p>{sticker.location}</p>
 
       {#if stickersInAlbum.has(sticker.stickerId)}
@@ -56,6 +58,7 @@
       & > h2 {
         font-size: 1.25rem;
         font-weight: var(--fw-bold);
+        scroll-margin-block-start: 2em;
       }
 
       & > :is(.sticker-wrapper, .slot-wrapper) {

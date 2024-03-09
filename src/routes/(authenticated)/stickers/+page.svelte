@@ -2,10 +2,10 @@
   import { cubicInOut } from 'svelte/easing';
   import { fade, slide, type FadeParams } from 'svelte/transition';
   import { enhance } from '$app/forms';
-  import { invalidateAll } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { Alert, Confirm, Dialog } from '$lib/components';
   import { postJson, readError } from "$lib/fetch";
-  import { getStickerImageUrl } from '$lib/stickers';
+  import { getStickerHeadingId, getStickerImageUrl } from '$lib/stickers';
   import Countdown from './Countdown.svelte';
 
   export let data;
@@ -82,8 +82,11 @@
       return;
     }
 
+    const ownedStickerId = menuSticker.ownedStickerId;
+    const stickerTitle = menuSticker.title;
+
     const response = await postJson("/api/deck/add-to-album", {
-      ownedStickerId: menuSticker.ownedStickerId,
+      ownedStickerId: ownedStickerId
     });
 
     if (response.ok) {
@@ -94,7 +97,7 @@
       if (responseJson.isDuplicate) {
         alert.show("Oh!", "You've already got this sticker in your album. Maybe you can trade it for one you need.");
       } else {
-        await invalidateAll();
+        await goto("/#" + getStickerHeadingId(stickerTitle));
       }
     } else {
       alert.show("Error", await readError(response));

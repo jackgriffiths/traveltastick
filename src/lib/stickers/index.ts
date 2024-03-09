@@ -24,3 +24,7 @@ export const getStickerImageUrl = (title: string) => {
   const sourceFilePath = `/src/lib/images/stickers/${sanitizedTitle}.jpg`;
   return imageUrls[sourceFilePath] ?? "";
 }
+
+export const getStickerHeadingId = (title: string) => {
+  return title.replaceAll(/[ '"]/g, "_");
+}
