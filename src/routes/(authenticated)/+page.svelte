@@ -1,8 +1,29 @@
 <script>
-  import { getStickerHeadingId, getStickerImageUrl } from '$lib/stickers';
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { getStickerHeadingId, getStickerImageUrl } from "$lib/stickers";
 
   export let data;
   $: stickersInAlbum = new Set(data.stickersInAlbum);
+
+  // This query param is deliberately not accessed in the
+  // page's server load function. This prevents the load
+  // function from re-running when the value changes.
+  // The parameter's value does not affect the loaded data.
+  const animateStickerNumber = Number.parseInt($page.url.searchParams.get("stick") || "");
+
+  // This only runs client-side.
+  onMount(async () => {
+    if (animateStickerNumber) {
+      // Immediately remove the query parameter so that
+      // the stick animation will not run again if the
+      // page is refreshed. Setting this URL does not
+      // cause the page to be reloaded or rerendered
+      // again, so the animation is not interrupted.
+      await goto(`/${$page.url.hash}`, { replaceState: true });
+    }
+  });
 </script>
 
 <svelte:head>
@@ -19,21 +40,33 @@
       </h2>
       <p>{sticker.location}</p>
 
-      {#if stickersInAlbum.has(sticker.stickerId)}
-        <div class="sticker-wrapper">
+      <div class="slot-container" class:animate-sticker={animateStickerNumber === sticker.number}>
+        {#if stickersInAlbum.has(sticker.stickerId)}
+          {#if animateStickerNumber === sticker.number}
+            <div class="slot" aria-hidden="true">
+              <span class="slot-number">
+                {sticker.number}
+              </span>
+            </div>
+          {/if}
+
           <div class="sticker" class:shiny={sticker.isShiny}>
             <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
           </div>
-        </div>
-      {:else}
-        <div class="slot-wrapper">
-          <div class="slot">
+
+          {#if animateStickerNumber === sticker.number}
+            <div class="sticker" class:shiny={sticker.isShiny} aria-hidden="true">
+              <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+            </div>
+          {/if}
+        {:else}
+          <div class="slot" aria-hidden="true">
             <span class="slot-number">
               {sticker.number}
             </span>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
 
       <p class="description">{sticker.description}</p>
     </div>
@@ -61,18 +94,121 @@
         scroll-margin-block-start: 2em;
       }
 
-      & > :is(.sticker-wrapper, .slot-wrapper) {
+      & > .slot-container {
         margin-block: 1rem;
       }
     }
   }
 
-  .sticker-wrapper, .slot-wrapper {
+  .slot-container {
     align-self: flex-start;
     justify-self: start;
     width: 100%;
     max-width: 350px;
     container-type: inline-size;
+  }
+
+  .slot-container.animate-sticker {
+    display: grid;
+    perspective: 2000px;
+    transform-style: preserve-3d;
+
+    --sticker-x: 0%;
+    --sticker-y: 0%;
+    --sticker-angle: 45deg;
+    --stuck-down: 100%;
+    
+    --line-up-duration: 1s;
+    --stick-down-duration: 1s;
+
+    animation-name: line-up, stick-down;
+    animation-duration: var(--line-up-duration), var(--stick-down-duration);
+    animation-delay: 0s, var(--line-up-duration);
+    animation-timing-function: ease-out, ease-in-out;
+    animation-fill-mode: forwards, forwards;
+
+    --top-left: 0% 0%;
+    --top-right: 100% 0%;
+    --bottom-right: 100% 100%;
+    --bottom-left: 0% 100%;
+
+    & > * {
+      grid-area: 1 / 1;
+    }
+
+    /*
+      The sticking of the sticker effect is achieved by animating 2 identical
+      instances of a sticker, displayed on top of each other. Each instance
+      renders a different part of the sticker, where the proportion is controlled
+      by the animation.
+      
+      The first part begins fully clipped, while the second part begins fully visible.
+      The second part is rotated so that the bottom appears to be lifted off the page.
+      Gradually, the first part (which is flat on the page) is revealed from top to
+      bottom, while the second part is clipped from top to bottom at the same rate.
+      This gives the appearance that the sticker is being stuck down from top to bottom.
+    */
+
+    & .slot[aria-hidden="true"] {
+      /*
+        This clip path should not be necessary. It doesn't deliberately clip any part
+        of the slot. However, it does appear to clip any subpixels around the slot.
+        And because the sticker also has a clip path, it was noticed that the slot's
+        subpixels were visible behind the sticker, which created unwanted lines around
+        the sticker. By applying this clip path to the slot, both the slot and the
+        sticker (after the animation) are clipped to the exact same size.
+      */
+      clip-path: polygon(var(--top-left), var(--top-right), var(--bottom-right), var(--bottom-left));
+    }
+
+    /* The top part of the sticker, displayed flat on the page */
+    & .sticker:not([aria-hidden="true"]) {
+      /*
+        Increase clipped height by 1px so there is never a gap between the two parts of the
+        sticker. This can happen when the browser tries to render subpixels. This extra row
+        of pixels will either fill in the gap or be obscured by the bottom part of the
+        sticker, so it doesn't distort appearance of the sticker.
+      */
+      --safe-stuck-down: min(var(--stuck-down) + 1px, 100%);
+
+      clip-path: polygon(var(--top-left), var(--top-right), 100% var(--safe-stuck-down), 0% var(--safe-stuck-down));
+      translate: var(--sticker-x) var(--sticker-y);
+    }
+  
+    /* The bottom part of the sticker, which is lifted off the page */
+    & .sticker[aria-hidden="true"] {
+      clip-path: polygon(0% var(--stuck-down), 100% var(--stuck-down), var(--bottom-right), var(--bottom-left));
+      transform-origin: 0 var(--stuck-down);
+      translate: var(--sticker-x) var(--sticker-y);
+      rotate: x var(--sticker-angle);
+    }
+  }
+
+  @keyframes line-up {
+    0% {
+      --stuck-down: 0%;
+      --sticker-x: 100%;
+      --sticker-y: 20%;
+      --sticker-angle: 10deg;
+    }
+    30% {
+      --sticker-angle: 10deg;
+    }
+    100% {
+      --stuck-down: 0%;
+      --sticker-x: 0%;
+      --sticker-y: 0%;
+      --sticker-angle: 45deg;
+    }
+  }
+
+  @keyframes stick-down {
+    0% {
+      --stuck-down: 0%;
+    }
+    100% {
+      --stuck-down: 100%;
+    }
   }
 
   /* There might be a bug with Svelte/Vite, because nesting wasn't working inside a container query */
@@ -91,7 +227,7 @@
       margin-block-start: 0.75rem;
     }
 
-    .album > .album-row > :is(.sticker-wrapper, .slot-wrapper) {
+    .album > .album-row > .slot-container {
       grid-row: 1 / span 4;
       grid-column: 1;
       margin-block: 0;
@@ -166,5 +302,29 @@
         color: var(--body-background-color);
       }
     }
+  }
+
+  @property --sticker-x {
+    initial-value: 0px;
+    syntax: "<length-percentage>";
+    inherits: true;
+  }
+
+  @property --sticker-y {
+    initial-value: 0px;
+    syntax: "<length-percentage>";
+    inherits: true;
+  }
+
+  @property --sticker-angle {
+    initial-value: 0deg;
+    syntax: "<angle>";
+    inherits: true;
+  }
+
+  @property --stuck-down {
+    initial-value: 0%;
+    syntax: "<percentage>";
+    inherits: true;
   }
 </style>

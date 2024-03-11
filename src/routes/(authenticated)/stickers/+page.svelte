@@ -84,6 +84,7 @@
 
     const ownedStickerId = menuSticker.ownedStickerId;
     const stickerTitle = menuSticker.title;
+    const stickerNumber = menuSticker.number;
 
     const response = await postJson("/api/deck/add-to-album", {
       ownedStickerId: ownedStickerId
@@ -97,7 +98,7 @@
       if (responseJson.isDuplicate) {
         alert.show("Oh!", "You've already got this sticker in your album. Maybe you can trade it for one you need.");
       } else {
-        await goto("/#" + getStickerHeadingId(stickerTitle));
+        await goto(`/?stick=${stickerNumber}#${getStickerHeadingId(stickerTitle)}`);
       }
     } else {
       alert.show("Error", await readError(response));
