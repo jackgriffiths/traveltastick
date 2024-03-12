@@ -1,11 +1,14 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { Dialog } from "$lib/components";
   import { getStickerHeadingId, getStickerImageUrl } from "$lib/stickers";
 
   export let data;
   $: stickersInAlbum = new Set(data.stickersInAlbum);
+
+  let jumpList: Dialog;
 
   // This query param is deliberately not accessed in the
   // page's server load function. This prevents the load
@@ -31,6 +34,11 @@
 </svelte:head>
 
 <h1>Album</h1>
+
+<button type="button" class="jump-list-open-button" on:click={() => jumpList.showModal()}>
+  <span aria-hidden="true">🔎</span>
+  At a glance...
+</button>
 
 <div class="album">
   {#each data.stickers as sticker}
@@ -73,11 +81,60 @@
   {/each}
 </div>
 
+<Dialog bind:this={jumpList}>
+  <form method="dialog">
+    <button type="submit" class="jump-list-close-button">
+      <span aria-hidden="true">✖️</span> Close
+    </button>
+  </form>
+
+  <div class="jump-list">
+    {#each data.stickers as sticker}
+      <a href={`#${getStickerHeadingId(sticker.title)}`} on:click={() => jumpList.close()}>
+        {#if stickersInAlbum.has(sticker.stickerId)}
+          <div class="sticker" class:shiny={sticker.isShiny}>
+            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+          </div>
+        {:else}
+          <div class="slot">
+            <span class="slot-number">
+              {sticker.number}
+            </span>
+          </div>
+        {/if}
+      </a>
+    {/each}
+  </div>
+</Dialog>
+
 <style>
   h1 {
     font-size: 2rem;
     text-align: center;
-    margin-block-end: 1.5em;
+  }
+
+  .jump-list-open-button {
+    display: block;
+    margin-block: 1.5rem 3rem;
+    margin-inline: auto;
+  }
+
+  .jump-list-close-button {
+    display: block;
+    margin-block-end: 1rem;
+    margin-inline-start: auto;
+  }
+
+  .jump-list {
+    display: grid;
+    max-inline-size: 800px;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 0.5rem;
+
+    & > a {
+      display: block;
+      container-type: inline-size;
+    }
   }
 
   .album {
@@ -265,7 +322,6 @@
       border-image-source: var(--shiny-sticker-border-gradient);
       border-image-slice: 1;
       background: var(--shiny-sticker-background-color);
-      animation: 8s shine ease-in-out alternate infinite;
     }
 
     & > img {
@@ -273,6 +329,15 @@
       aspect-ratio: var(--sticker-image-aspect-ratio);
       object-fit: cover;
     }
+  }
+
+  /*
+    The animation is only played when the shiny is shown in the album.
+    In the jump list, the stickers are so small that the animation is
+    not worth playing, so not playing it helps improve performance.
+  */
+  .album .sticker.shiny {
+    animation: 8s shine ease-in-out alternate infinite;
   }
 
   .slot {
@@ -291,7 +356,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
+      font-size: clamp(1rem, 14cqi, 5rem);
       font-weight: var(--fw-bold);
 
       @media (prefers-color-scheme: light) {
