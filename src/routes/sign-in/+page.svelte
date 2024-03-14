@@ -1,59 +1,11 @@
 <script lang="ts">
-  import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
+  import { browserSupportsWebAuthn, startAuthentication } from "@simplewebauthn/browser";
   import { goto } from "$app/navigation";
   import { Alert } from "$lib/components";
   import { post, postJson, readError } from "$lib/fetch";
 
   let alert: Alert;
-  let accountName: string;
-
-  let isBusy = false; // Creating account or signing in
-  let isCreatingAccount = false;
-
-  const createAccount = async () => {
-    if (!browserSupportsWebAuthn()) {
-      alert.show("Not supported", "Your browser does not support passkeys. Please try a different browser.");
-      return;
-    }
-
-    if (isBusy) {
-      return;
-    }
-
-    isBusy = true;
-    isCreatingAccount = true;
-
-    try {
-      const beginResponse = await postJson("/api/auth/begin-registration", { userName: accountName });
-      if (!beginResponse.ok) {
-        alert.show("Error", await readError(beginResponse, "Something went wrong. Please try again."));
-        return;
-      }
-
-      const registrationOptions = await beginResponse.json();
-      const registration = await startRegistration(registrationOptions);
-      const verificationResponse = await postJson("/api/auth/complete-registration", registration);
-
-      if (verificationResponse.ok) {
-        // Wrap this in a try catch just in case navigation fails.
-        // It's important to let the user know that actually an
-        // account was successfully created.
-        try {
-          await goto("/", { replaceState: true });
-        } catch (e) {
-          // Once the authenticated user refreshes, they'll be redirected to the home page.
-          alert.show("Account created", "Please refresh the page.");
-        }
-      } else {
-        alert.show("Error", await readError(verificationResponse, "Something went wrong while creating your account. Please try again."));
-      }
-    } catch {
-      alert.show("Failed", "Could not create account.");
-    } finally {
-      isCreatingAccount = false;
-      isBusy = false;
-    }
-  }
+  let isBusy = false;
 
   const signIn = async () => {
     if (!browserSupportsWebAuthn()) {
@@ -117,17 +69,11 @@
       Sign in
     </button>
 
-    <h2>Don't have an account?</h2>
-
-    <form on:submit={createAccount}>
-      <label for="name">Account name</label>
-      <input id="name" name="name" type="text" bind:value={accountName} required autocomplete="given-name" />
-      <p class="help-text">You can choose any name you like. It doesn't need to be unique and it is only ever seen by you.</p>
-      <button type="submit">Create account</button>
-      {#if isCreatingAccount}
-        <p class="wait-text">Waiting for passkey...</p>
-      {/if}
-    </form>
+    <p class="create-account">
+      <a href="/create-account">
+        Create an account
+      </a>
+    </p>
   </section>
 </div>
 
@@ -151,7 +97,7 @@
   }
 
   h1 {
-    margin-block-end: 1.5rem;
+    margin-block-end: 1.25rem;
     font-size: 2rem;
     font-weight: bold;
     text-align: center;
@@ -168,7 +114,7 @@
   }
 
   .features {
-    margin-block-end: 1.5rem;
+    margin-block-end: 2.5rem;
     list-style-type: features-symbols;
     list-style-position: outside;
     padding-inline-start: 2em;
@@ -178,38 +124,8 @@
     }
   }
 
-  h2 {
-    font-size: 1.25rem;
-    margin-block-start: 2rem;
-    margin-block-end: 1rem;
+  .create-account {
+    margin-block-start: 1rem;
     text-align: center;
-  }
-
-  button {
-    inline-size: 100%;
-  }
-
-  form {
-    inline-size: 100%;
-
-    & > label {
-      display: block;
-      margin-block-end: 0.25em;
-    }
-
-    & > input {
-      display: block;
-      inline-size: 100%;
-    }
-
-    & .help-text {
-      margin-block: 0.5rem 1.5rem;
-      text-wrap: pretty;
-    }
-
-    & .wait-text {
-      margin-block-start: 0.5rem;
-      text-align: center;
-    }
   }
 </style>
