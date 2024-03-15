@@ -4,21 +4,6 @@ import { PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/lib/server/db/schema";
 
-const users = [
-  {
-    album: null,
-    deck: [2],
-  },
-  {
-    album: [1, 2],
-    deck: [1],
-  },
-  {
-    album: [1, 2, 3],
-    deck: [2],
-  },
-];
-
 const stickers = [
   {
     title: "Earth",
@@ -473,11 +458,9 @@ async function insertStickers(db: Db) {
 }
 
 async function insertUsers(db: Db, stickers: Map<number, number>) {
-  const ownedStickersToInsert: (typeof schema.ownedStickers.$inferInsert)[] = [];
+  const allStickerNumbers = [...stickers.keys()];
 
-  const allStickerNumbers = [...stickers.values()];
-
-  for (const user of users) {
+  for (let i = 0; i < 1000; i++) {
     const toInsert: typeof schema.users.$inferInsert = {
       userHandle: randomBytes(32).toString("base64url"),
       registeredUtc: new Date(),
@@ -488,8 +471,22 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
       .values(toInsert)
       .returning({ id: schema.users.userId }))[0];
 
+    const numberOfStickersInAlbum = Math.ceil(Math.random() * allStickerNumbers.length);
+    const numberOfStickersInDeck = Math.ceil(Math.random() * 10);
+
+    const stickersInAlbum = [...allStickerNumbers]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, numberOfStickersInAlbum);
+
+    const stickersInDeck: number[] = [];
+    for (let i = 0; i < numberOfStickersInDeck; i++) {
+      stickersInDeck.push(allStickerNumbers[Math.floor(Math.random() * allStickerNumbers.length)]);
+    }
+
+    const ownedStickersToInsert: (typeof schema.ownedStickers.$inferInsert)[] = [];
+
     ownedStickersToInsert.push(
-      ...(user.album ?? allStickerNumbers).map(number => ({
+      ...stickersInAlbum.map(number => ({
         userId: insertedRow.id,
         stickerId: stickers.get(number)!,
         receivedUtc: new Date(),
@@ -497,15 +494,15 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
       })));
 
     ownedStickersToInsert.push(
-      ...user.deck.map(number => ({
+      ...stickersInDeck.map(number => ({
         userId: insertedRow.id,
         stickerId: stickers.get(number)!,
         receivedUtc: new Date(),
         isInAlbum: false,
       })));
-  }
 
-  await db.insert(schema.ownedStickers).values(ownedStickersToInsert);
+    await db.insert(schema.ownedStickers).values(ownedStickersToInsert);
+  }
 }
 
 async function updateDescriptions(connection: postgres.Sql) {
