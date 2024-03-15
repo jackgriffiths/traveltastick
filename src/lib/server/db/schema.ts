@@ -1,4 +1,4 @@
-import { boolean, customType, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, customType, index, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
 const bytea = customType<{ data: Uint8Array }>({
   dataType() {
@@ -27,6 +27,10 @@ export const credentials = pgTable("credentials", {
   lastUsedUtc: timestamp("last_used_utc").notNull(),
   canBeBackedUp: boolean("can_be_backed_up").notNull(),
   isBackedUp: boolean("is_backed_up").notNull(),
+}, (table) => {
+  return {
+    userIdx: index("credentials_user_idx").on(table.userId),
+  }
 });
 
 export const sessions = pgTable("sessions", {
@@ -55,4 +59,9 @@ export const ownedStickers = pgTable("owned_stickers", {
   userId: integer("user_id").notNull().references(() => users.userId),
   receivedUtc: timestamp("received_utc").notNull(),
   isInAlbum: boolean("is_in_album").notNull(),
+}, (table) => {
+  return {
+    stickerIdx: index("owned_stickers_sticker_idx").on(table.stickerId),
+    userIdx: index("owned_stickers_user_idx").on(table.userId, table.isInAlbum),
+  }
 });
