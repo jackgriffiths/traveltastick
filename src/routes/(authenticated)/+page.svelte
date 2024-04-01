@@ -59,12 +59,12 @@
           {/if}
 
           <div class="sticker" class:shiny={sticker.isShiny}>
-            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} loading="lazy" />
           </div>
 
           {#if animateStickerNumber === sticker.number}
             <div class="sticker" class:shiny={sticker.isShiny} aria-hidden="true">
-              <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+              <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} loading="lazy" />
             </div>
           {/if}
         {:else}
@@ -93,7 +93,7 @@
       <a href={`#${getStickerHeadingId(sticker.title)}`} on:click={() => jumpList.close()}>
         {#if stickersInAlbum.has(sticker.stickerId)}
           <div class="sticker" class:shiny={sticker.isShiny}>
-            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
+            <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} loading="lazy" />
           </div>
         {:else}
           <div class="slot">
