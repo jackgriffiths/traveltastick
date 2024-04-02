@@ -304,20 +304,18 @@
 
     &.shiny {
       --shiny-sticker-highlight-color: hsl(0, 0%, 80%);
-        --shiny-sticker-border-gradient-start-angle: 35deg;
-        --shiny-sticker-border-gradient-angle-shift: 20deg;
-        --shiny-sticker-border-gradient-angle: var(--shiny-sticker-border-gradient-start-angle);
+      --shiny-sticker-border-gradient-angle: 35deg;
 
-        --shiny-sticker-border-gradient: linear-gradient(
-          var(--shiny-sticker-border-gradient-angle, 30deg),
-          var(--shiny-sticker-color) 0%,
-          var(--shiny-sticker-color) 10%,
-          var(--shiny-sticker-highlight-color) 33%,
-          var(--shiny-sticker-color) 45%,
-          var(--shiny-sticker-color) 66%,
-          var(--shiny-sticker-highlight-color) 77%,
-          var(--shiny-sticker-color) 90%,
-          var(--shiny-sticker-color) 95%);
+      --shiny-sticker-border-gradient: linear-gradient(
+        var(--shiny-sticker-border-gradient-angle),
+        var(--shiny-sticker-color) 0%,
+        var(--shiny-sticker-color) 10%,
+        var(--shiny-sticker-highlight-color) 33%,
+        var(--shiny-sticker-color) 45%,
+        var(--shiny-sticker-color) 66%,
+        var(--shiny-sticker-highlight-color) 77%,
+        var(--shiny-sticker-color) 90%,
+        var(--shiny-sticker-color) 95%);
 
       border-image-source: var(--shiny-sticker-border-gradient);
       border-image-slice: 1;
@@ -329,15 +327,6 @@
       aspect-ratio: var(--sticker-image-aspect-ratio);
       object-fit: cover;
     }
-  }
-
-  /*
-    The animation is only played when the shiny is shown in the album.
-    In the jump list, the stickers are so small that the animation is
-    not worth playing, so not playing it helps improve performance.
-  */
-  .album .sticker.shiny {
-    animation: 8s shine ease-in-out alternate infinite;
   }
 
   .slot {

@@ -381,12 +381,10 @@
 
       &.shiny {
         --shiny-sticker-highlight-color: hsl(0, 0%, 80%);
-        --shiny-sticker-border-gradient-start-angle: 35deg;
-        --shiny-sticker-border-gradient-angle-shift: 20deg;
-        --shiny-sticker-border-gradient-angle: var(--shiny-sticker-border-gradient-start-angle);
+        --shiny-sticker-border-gradient-angle: 35deg;
 
         --shiny-sticker-border-gradient: linear-gradient(
-          var(--shiny-sticker-border-gradient-angle, 30deg),
+          var(--shiny-sticker-border-gradient-angle),
           var(--shiny-sticker-color) 0%,
           var(--shiny-sticker-color) 10%,
           var(--shiny-sticker-highlight-color) 33%,
@@ -399,7 +397,6 @@
         border-image-source: var(--shiny-sticker-border-gradient);
         border-image-slice: 1;
         background: var(--shiny-sticker-background-color);
-        animation: 8s shine ease-in-out alternate infinite;
       }
 
       & > img {

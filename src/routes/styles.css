@@ -216,16 +216,4 @@
       background: #00000066;
     }
   }
-
-  @property --shiny-sticker-border-gradient-angle {
-    initial-value: 0deg;
-    inherits: false;
-    syntax: '<angle>';
-  }
-
-  @keyframes shine {
-    100% {
-      --shiny-sticker-border-gradient-angle: calc(var(--shiny-sticker-border-gradient-start-angle) + var(--shiny-sticker-border-gradient-angle-shift));
-    }
-  }
 }
