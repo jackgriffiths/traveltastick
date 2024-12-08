@@ -1,4 +1,4 @@
-import { boolean, customType, index, integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, customType, index, integer, pgTable, serial, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
 const bytea = customType<{ data: Uint8Array }>({
   dataType() {
@@ -46,11 +46,16 @@ export const sessions = pgTable("sessions", {
 
 export const stickers = pgTable("stickers", {
   stickerId: serial("sticker_id").primaryKey(),
-  number: integer("number").notNull().unique(),
+  number: integer("number").notNull(),
   title: text("title").notNull(),
   location: text("location").notNull(),
   description: text("description").notNull(),
   isShiny: boolean("is_shiny").notNull(),
+  isChristmasSpecial: boolean("is_christmas_special").notNull(),
+}, (table) => {
+  return {
+    numberIdx: unique("stickers_number_idx").on(table.number, table.isChristmasSpecial),
+  }
 });
 
 export const ownedStickers = pgTable("owned_stickers", {

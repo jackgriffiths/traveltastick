@@ -427,12 +427,130 @@ const stickers = [
   },
 ];
 
+const christmasStickers = [
+  {
+    title: "Santa Claus",
+    location: "",
+    description: "",
+    isShiny: true,
+  },
+  {
+    title: "Reindeer",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Christmas Tree",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Christmas Presents",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Posadas",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Piñata",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Christmas Lights",
+    location: "",
+    description: "",
+    isShiny: true,
+  },
+  {
+    title: "Christmas Market",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Ponche",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Tamales",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Candy Canes",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Mince Pies",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Christmas Dinner",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Ensalada de Manzana",
+    location: "",
+    description: "",
+    isShiny: true,
+  },
+  {
+    title: "Snowman",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Poinsettia",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Holly",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+  {
+    title: "Nutcracker Soldier",
+    location: "",
+    description: "",
+    isShiny: true,
+  },
+  {
+    title: "Rosca de Reyes",
+    location: "",
+    description: "",
+    isShiny: false,
+  },
+];
+
 type Db = PostgresJsDatabase<typeof schema>;
 
 async function seed(connection: postgres.Sql) {
   const db = drizzle(connection, { schema });
 
   const stickers = await insertStickers(db);
+  await insertChristmasStickers(db);
   await insertUsers(db, stickers);
 }
 
@@ -444,6 +562,29 @@ async function insertStickers(db: Db) {
       location: s.location,
       description: s.description || "TODO",
       isShiny: s.isShiny,
+      isChristmasSpecial: false,
+    }));
+
+  const insertedRows = await db
+    .insert(schema.stickers)
+    .values(toInsert)
+    .returning({
+      id: schema.stickers.stickerId,
+      number: schema.stickers.number
+    });
+
+  return new Map(insertedRows.map(r => [r.number, r.id]));
+}
+
+async function insertChristmasStickers(db: Db) {
+  const toInsert: (typeof schema.stickers.$inferInsert)[] = christmasStickers
+    .map((s, index) => ({
+      number: index + 1,
+      title: s.title,
+      location: s.location,
+      description: s.description || "TODO",
+      isShiny: s.isShiny,
+      isChristmasSpecial: true,
     }));
 
   const insertedRows = await db
