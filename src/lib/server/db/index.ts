@@ -306,6 +306,7 @@ export const getStickers = async () => {
       description: true,
       isShiny: true,
     },
+    where: () => eq(schema.stickers.isChristmasSpecial, true),
     orderBy: [asc(schema.stickers.number)]
   });
 }
@@ -315,7 +316,8 @@ export const getStickersForSampling = async () => {
     columns: {
       stickerId: true,
       isShiny: true,
-    }
+    },
+    where: () => eq(schema.stickers.isChristmasSpecial, true),
   });
 }
 
@@ -343,7 +345,7 @@ export const getDeck = async (userId: number) => {
       isShiny: schema.stickers.isShiny,
     })
     .from(schema.ownedStickers)
-    .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false)))
+    .where(and(eq(schema.ownedStickers.userId, userId), eq(schema.ownedStickers.isInAlbum, false), eq(schema.stickers.isChristmasSpecial, true)))
     .orderBy(desc(schema.ownedStickers.receivedUtc), asc(schema.ownedStickers.ownedStickerId))
     .innerJoin(schema.stickers, eq(schema.ownedStickers.stickerId, schema.stickers.stickerId));
 }
