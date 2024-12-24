@@ -431,115 +431,121 @@ const christmasStickers = [
   {
     title: "Santa Claus",
     location: "",
-    description: "",
+    description: "This jolly figure delivers gifts to children around the world on Christmas Eve. Known for his red suit and white beard, he spreads joy and Christmas cheer wherever he goes.",
     isShiny: true,
   },
   {
     title: "Reindeer",
     location: "",
-    description: "",
+    description: "Reindeer help Santa fly across the sky to deliver presents on Christmas Eve. These strong animals live in cold regions like the Arctic and are famous for their endurance.",
     isShiny: false,
   },
   {
     title: "Christmas Tree",
     location: "",
-    description: "",
+    description: "This decorated evergreen tree is a centerpiece of Christmas celebrations. Families adorn it with lights, ornaments, and sometimes a star or angel on top.",
     isShiny: false,
   },
   {
     title: "Christmas Presents",
     location: "",
-    description: "",
+    description: "Wrapped gifts are a symbol of love and kindness during Christmas. They are often placed under the Christmas tree, bringing excitement to everyone who opens them.",
     isShiny: false,
   },
   {
     title: "Posadas",
     location: "",
-    description: "",
+    description: "This Mexican tradition reenacts Mary and Joseph's journey to find shelter. Held over nine nights, it includes singing, prayers, and celebrations with piñatas and festive food.",
     isShiny: false,
   },
   {
     title: "Piñata",
     location: "",
-    description: "",
+    description: "A colorful decoration filled with candies and toys, piñatas are broken during celebrations. Traditionally, their seven points represent the seven deadly sins, and breaking them symbolizes overcoming evil.",
     isShiny: false,
   },
   {
     title: "Christmas Lights",
     location: "",
-    description: "",
+    description: "Bright and colorful lights decorate streets and homes, creating a magical Christmas atmosphere. They brighten the darkest winter nights and bring smiles to everyone who sees them.",
     isShiny: true,
   },
   {
     title: "Christmas Market",
     location: "",
-    description: "",
+    description: "These festive markets sell handmade gifts, ornaments, and delicious treats. Visitors enjoy the cheerful atmosphere, warm drinks, and unique Christmas items.",
     isShiny: false,
   },
   {
     title: "Ponche",
     location: "",
-    description: "",
+    description: "This warm Mexican punch is made with fruits like guava, tamarind, and apples, mixed with spices. It is a comforting drink enjoyed during Christmas gatherings.",
     isShiny: false,
   },
   {
     title: "Tamales",
     location: "",
-    description: "",
+    description: "Tamales are made from corn dough filled with meats, cheeses, or vegetables, then steamed in husks. They are a must-have for Christmas in Mexico and are shared with family and friends.",
     isShiny: false,
   },
   {
     title: "Candy Canes",
     location: "",
-    description: "",
+    description: "These striped peppermint candies are shaped like a shepherd’s crook. They are a sweet Christmas treat often used to decorate trees or given as gifts.",
     isShiny: false,
   },
   {
     title: "Mince Pies",
     location: "",
-    description: "",
+    description: "These sweet pies are filled with spiced fruits and are a favorite Christmas treat in the UK. Traditionally, they are left out for Santa as a snack on Christmas Eve.",
     isShiny: false,
   },
   {
     title: "Christmas Dinner",
     location: "",
-    description: "",
+    description: "A classic Christmas dinner includes turkey, roasted vegetables, and potatoes. Families gather to enjoy this festive meal, often finishing with a delicious dessert like pudding.",
     isShiny: false,
   },
   {
     title: "Ensalada de Manzana",
     location: "",
-    description: "",
+    description: "This Mexican apple salad is sweet and creamy, made with apples, pineapples, and raisins. It adds a refreshing touch to Christmas feasts.",
     isShiny: true,
   },
   {
     title: "Snowman",
     location: "",
-    description: "",
+    description: "Snowmen are made by stacking large snowballs and adding fun details like a carrot nose and a scarf. They are a symbol of winter and Christmas joy.",
     isShiny: false,
   },
   {
-    title: "Poinsettia",
+    title: "Nochebuena",
     location: "",
-    description: "",
+    description: "The poinsettia, or Nochebuena, is a bright red plant native to Mexico and a classic Christmas decoration. Its star-shaped leaves are said to symbolize the Star of Bethlehem.",
     isShiny: false,
   },
   {
     title: "Holly",
     location: "",
-    description: "",
+    description: "Holly has shiny green leaves and red berries, making it a popular Christmas decoration. It symbolizes peace and joy during the Christmas season.",
     isShiny: false,
   },
   {
     title: "Nutcracker Soldier",
     location: "",
-    description: "",
+    description: "The nutcracker soldier began as a traditional German decoration, believed to bring good luck and protect homes. It later became famous through the ballet 'The Nutcracker.'",
     isShiny: true,
+  },
+  {
+    title: "Three Wise Men",
+    location: "",
+    description: "The Wise Men brought gifts to baby Jesus: gold, frankincense, and myrrh. Their visit is celebrated on January 6th, known as Three Kings' Day.",
+    isShiny: false,
   },
   {
     title: "Rosca de Reyes",
     location: "",
-    description: "",
+    description: "This sweet bread is enjoyed in Mexico on Three Kings' Day. Shaped like a crown, it has candied fruits and hidden figurines inside that bring luck to the finders.",
     isShiny: false,
   },
 ];
@@ -649,7 +655,7 @@ async function insertUsers(db: Db, stickers: Map<number, number>) {
 async function updateDescriptions(connection: postgres.Sql) {
   const db = drizzle(connection, { schema });
 
-  for (const sticker of stickers) {
+  for (const sticker of [...stickers, ...christmasStickers]) {
     await db.update(schema.stickers)
       .set({ description: sticker.description || "TODO" })
       .where(eq(schema.stickers.title, sticker.title))
