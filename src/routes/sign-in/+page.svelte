@@ -57,11 +57,10 @@
 
 <div class="content">
   <section>
-    <h1 class="strikethrough">Travel<span class="italic">tastick</span></h1>
-    <h1>Christmas-<span class="italic">tastick</span></h1>
+    <h1>Travel<span class="italic">tastick</span></h1>
 
     <ul class="features">
-      <li>Collect Christmas-themed stickers</li>
+      <li>Collect stickers of famous landmarks</li>
       <li>Open a packet of stickers every day</li>
       <li>Trade stickers with your friends</li>
     </ul>
@@ -81,10 +80,6 @@
 <Alert bind:this={alert} />
 
 <style>
-  .strikethrough {
-    text-decoration: line-through;
-  }
-
   .content {
     padding-inline: var(--page-gutter);
   }
@@ -114,7 +109,7 @@
 
   @counter-style features-symbols {
     system: fixed;
-    symbols: "🎄" "📆" "🤝";
+    symbols: "🌎" "📆" "🤝";
     suffix: " ";
   }
 
