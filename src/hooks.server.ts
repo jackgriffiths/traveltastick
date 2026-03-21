@@ -4,11 +4,11 @@ import { getSession } from "$lib/server/sessions";
 export const handle: Handle = async ({ event, resolve }) => {
   // If required, redirect HTTP requests to HTTPS.
 
-  // Heroku sets this header when forwarding requests from the load balancer.
+  // Reverse proxies set this header when forwarding requests.
   const forwardedProtocol = event.request.headers.get("x-forwarded-proto");
 
   // In local dev, requests are sent using HTTP.
-  // In Heroku, requests should be forced to use HTTPS.
+  // Behind a reverse proxy, requests should be forced to use HTTPS.
   if (forwardedProtocol && forwardedProtocol !== "https") {
 
     // Rewrite the URL but with HTTPS instead.
