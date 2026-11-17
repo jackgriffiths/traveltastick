@@ -2,6 +2,7 @@
   import { cubicInOut } from 'svelte/easing';
   import { fade, slide, type FadeParams } from 'svelte/transition';
   import { enhance } from '$app/forms';
+  import type { SubmitFunction } from '@sveltejs/kit';
   import { goto, invalidateAll } from '$app/navigation';
   import { Alert, Confirm, Dialog } from '$lib/components';
   import { postJson, readError } from "$lib/fetch";
@@ -43,6 +44,24 @@
         duration: 0,
       }
     }
+  }
+
+  // How long the packet takes to tear open and drop away. Must match the CSS animations.
+  const packetOpenDuration = 900;
+  let isOpeningPacket = false;
+
+  const openPacket: SubmitFunction = () => {
+    isOpeningPacket = true;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const packetOpened = new Promise(resolve => setTimeout(resolve, prefersReducedMotion ? 0 : packetOpenDuration));
+
+    return async ({ update }) => {
+      // Let the packet finish tearing open before the stickers replace it.
+      await packetOpened;
+      await update();
+      isOpeningPacket = false;
+    };
   }
 
   let tradeDialog: Dialog;
@@ -186,9 +205,13 @@
 
 {#if data.canOpenPacket}
 
-  <form method="post" action="?/openPacket" class="packet-form" use:enhance>
-    <button type="submit" class="open-packet-button">
-      <img src="/packet.jpg" alt="Packet" />
+  <form method="post" action="?/openPacket" class="packet-form" use:enhance={openPacket}>
+    <button type="submit" class="packet" class:opening={isOpeningPacket} disabled={isOpeningPacket}>
+      <span class="packet-crimp packet-crimp-top" aria-hidden="true"></span>
+      <span class="packet-body">
+        <img src="/packet.jpg" alt="Open packet" />
+      </span>
+      <span class="packet-crimp packet-crimp-bottom" aria-hidden="true"></span>
     </button>
 
     {#if form && form.success == false}
@@ -301,23 +324,176 @@
     }
   }
 
-  /* TODO: Nesting this inside .packet-form causes the animation keyframes to not be found. Why? */
-  .packet-form button {
+  /*
+    The packet is drawn to look like a foil wrapper: crimped, heat-sealed ends,
+    and puffed-up foil with a glint of light that sweeps across it.
+
+    Everything is painted once. The only things that animate are `transform` and
+    `opacity`, which the browser can run on the compositor (GPU) without
+    repainting, so it is cheap to run on low-end phones.
+  */
+  .packet {
+    --foil-dark: hsl(210 65% 16%);
+    --foil-mid: hsl(205 50% 45%);
+    --foil-light: hsl(200 65% 78%);
+    --foil-shine: hsl(195 100% 97%);
+    --crimp-size: 9cqi;
+    --crimp-tooth-size: 3cqi;
+
+    display: grid;
     inline-size: 100%;
     cursor: pointer;
+    border: none;
     border-radius: 0;
     padding: 0;
-    background: white;
-    border: none;
+    background: none;
     outline-offset: 5px;
+
+    &:is(:hover, :active, :disabled) {
+      background: none;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  /* TODO: Nesting this inside .packet causes the animation keyframes to not be found. Why? */
+  .packet {
     animation: 5s wiggle linear infinite;
-    box-sizing: content-box;
-    aspect-ratio: var(--sticker-image-aspect-ratio);
+  }
+
+  .packet-crimp {
+    display: block;
+    block-size: var(--crimp-size);
+    background:
+      /* The ridges pressed into the seal, lit from one side */
+      repeating-linear-gradient(
+        90deg,
+        hsl(0 0% 0% / 0.4) 0,
+        hsl(0 0% 100% / 0.35) 1cqi,
+        hsl(0 0% 100% / 0) 2cqi,
+        hsl(0 0% 0% / 0.4) 3cqi),
+      /* Metallic bands of light across the seal */
+      linear-gradient(
+        180deg,
+        var(--foil-dark) 0%,
+        var(--foil-shine) 16%,
+        var(--foil-mid) 30%,
+        var(--foil-dark) 46%,
+        var(--foil-light) 62%,
+        var(--foil-shine) 74%,
+        var(--foil-mid) 87%,
+        var(--foil-dark) 100%);
+
+    /* A zig-zag edge, like a seal cut with pinking shears */
+    --teeth: conic-gradient(from var(--teeth-angle) at var(--teeth-edge), #0000, #000 1deg 89deg, #0000 90deg)
+      var(--teeth-edge) / var(--crimp-tooth-size) calc(var(--crimp-tooth-size) / 2) repeat-x;
+    --solid: linear-gradient(#000 0 0) var(--solid-edge) / 100% calc(100% - var(--crimp-tooth-size) / 2) no-repeat;
+    -webkit-mask: var(--teeth), var(--solid);
+    mask: var(--teeth), var(--solid);
+  }
+
+  .packet-crimp-top {
+    --teeth-angle: 135deg;
+    --teeth-edge: top;
+    --solid-edge: bottom;
+    transform-origin: 100% 100%;
+  }
+
+  .packet-crimp-bottom {
+    --teeth-angle: -45deg;
+    --teeth-edge: bottom;
+    --solid-edge: top;
+  }
+
+  .packet-body {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2cqi 4cqi hsl(0 0% 0% / 0.35);
 
     & > img {
-      width: 100%;
-      height: 100%;
+      inline-size: 100%;
+      aspect-ratio: var(--sticker-image-aspect-ratio);
       object-fit: cover;
+    }
+
+    /* The foil: shading where the packet puffs up, creases from the seals, and a holographic tint */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        /* A thin bright edge where the foil folds around the sides */
+        linear-gradient(90deg, hsl(0 0% 100% / 0.45), transparent 1.2%, transparent 98.8%, hsl(0 0% 100% / 0.45)),
+        /* Darker at the edges, where the foil curves away */
+        linear-gradient(90deg, hsl(0 0% 0% / 0.4), transparent 9%, transparent 91%, hsl(0 0% 0% / 0.4)),
+        linear-gradient(180deg, hsl(0 0% 0% / 0.35), transparent 10%, transparent 90%, hsl(0 0% 0% / 0.35)),
+        /* Soft highlights where the foil bulges */
+        linear-gradient(100deg, transparent 15%, hsl(0 0% 100% / 0.25) 28%, transparent 40%, transparent 62%, hsl(0 0% 100% / 0.12) 72%, transparent 82%),
+        /* Holographic tint */
+        linear-gradient(
+          115deg,
+          hsl(330 90% 70% / 0.14),
+          hsl(45 95% 65% / 0.1) 25%,
+          hsl(150 80% 60% / 0.1) 50%,
+          hsl(195 95% 65% / 0.14) 75%,
+          hsl(275 85% 70% / 0.14));
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block: -30%;
+      inset-inline-start: 0;
+      inline-size: 45%;
+      background: var(--shiny-sticker-glint);
+      pointer-events: none;
+      transform: translateX(-150%) rotate(20deg);
+      animation: var(--shiny-sticker-glint-animation);
+      animation-delay: 1s;
+    }
+  }
+
+  /*
+    Opening the packet: the top seal is torn off, then the packet drops away.
+    These durations must add up to `packetOpenDuration` in the script.
+  */
+  .packet.opening {
+    animation: packet-drop-away 400ms 500ms ease-in forwards;
+  }
+
+  .packet.opening .packet-crimp-top {
+    animation: packet-tear-off 550ms ease-in forwards;
+  }
+
+  @keyframes packet-tear-off {
+    0% {
+      transform: none;
+    }
+    30% {
+      transform: translateY(-15%) rotate(-4deg);
+    }
+    100% {
+      transform: translate(40%, -300%) rotate(-25deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes packet-drop-away {
+    100% {
+      transform: translateY(15%) scale(0.92);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .packet,
+    .packet.opening,
+    .packet.opening .packet-crimp-top {
+      animation: none;
     }
   }
 
