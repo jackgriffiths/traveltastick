@@ -101,16 +101,30 @@
         hsl(0 0% 96%) 86%,
         hsl(0 0% 58%) 100%);
 
-    /* A soft band of light, with a slight rainbow fringe, that sweeps across shiny stickers. */
+    /*
+      A band of light, with a slight rainbow fringe, that sweeps across shiny stickers.
+      There are two, moving together: a bright one that only shows on the foil frame
+      (which is shiny metal), and a gentle one over the photo (which is glossy print).
+    */
+    --shiny-sticker-foil-glint: linear-gradient(
+      90deg,
+      hsl(0 0% 100% / 0) 25%,
+      hsl(190 100% 85% / 0.35) 38%,
+      hsl(0 0% 100% / 0.8) 46%,
+      hsl(0 0% 100% / 1) 50%,
+      hsl(0 0% 100% / 0.8) 54%,
+      hsl(320 100% 85% / 0.35) 62%,
+      hsl(0 0% 100% / 0) 75%);
+
     --shiny-sticker-glint: linear-gradient(
       90deg,
-      hsl(0 0% 100% / 0) 20%,
-      hsl(190 100% 90% / 0.1) 38%,
-      hsl(0 0% 100% / 0.4) 46%,
-      hsl(0 0% 100% / 0.7) 50%,
-      hsl(0 0% 100% / 0.4) 54%,
-      hsl(320 100% 90% / 0.1) 62%,
-      hsl(0 0% 100% / 0) 80%);
+      hsl(0 0% 100% / 0) 36%,
+      hsl(190 100% 90% / 0.08) 42%,
+      hsl(0 0% 100% / 0.3) 48%,
+      hsl(0 0% 100% / 0.4) 50%,
+      hsl(0 0% 100% / 0.3) 52%,
+      hsl(320 100% 90% / 0.08) 58%,
+      hsl(0 0% 100% / 0) 64%);
 
     /*
       Only `transform` is animated, so the browser can run the animation on the
@@ -120,20 +134,24 @@
       repaint of every shiny sticker on every frame, which crashed Chrome on some
       low-end Android phones.
     */
-    --shiny-sticker-glint-animation: shiny-sticker-glint 6s ease-in-out infinite;
+    --shiny-sticker-glint-animation: shiny-sticker-glint 6s linear infinite;
 
     @media (prefers-reduced-motion: reduce) {
       --shiny-sticker-glint-animation: none;
     }
   }
 
-  /* The glint sweeps across in the first 1.5s, then rests out of view until the next iteration. */
+  /*
+    The glint sweeps across at a steady speed in the first 1.6s, then rests out of
+    view until the next iteration. It starts and ends out of view, so it doesn't need
+    easing, and a steady speed keeps it visible for most of the sweep.
+  */
   @keyframes shiny-sticker-glint {
     0% {
       transform: translateX(-150%) rotate(20deg);
     }
-    25%, 100% {
-      transform: translateX(300%) rotate(20deg);
+    27%, 100% {
+      transform: translateX(280%) rotate(20deg);
     }
   }
 
