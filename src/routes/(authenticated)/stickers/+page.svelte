@@ -419,7 +419,7 @@
       object-fit: cover;
     }
 
-    /* The foil: shading where the packet puffs up, creases from the seals, and a holographic tint */
+    /* The foil: shading where the packet puffs up, soft highlights, and a holographic tint */
     &::before {
       content: "";
       position: absolute;
