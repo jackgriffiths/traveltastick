@@ -309,6 +309,8 @@
       */
       position: relative;
       overflow: hidden;
+      /* So the foil glint can sit behind the photo but in front of the frame */
+      isolation: isolate;
       border-width: 0;
       padding: 3.5cqi;
       /* Chrome rounds border widths down to whole pixels, so do the same to keep shiny and normal stickers exactly the same size. */
@@ -328,16 +330,27 @@
     The glint is only shown in the album. In the jump list, the stickers
     are so small that it is not worth it.
   */
+  .album .sticker.shiny::before,
   .album .sticker.shiny::after {
     content: "";
     position: absolute;
     inset-block: -30%;
     inset-inline-start: 0;
     inline-size: 45%;
-    background: var(--shiny-sticker-glint);
     pointer-events: none;
     transform: translateX(-150%) rotate(20deg);
     animation: var(--shiny-sticker-glint-animation);
+  }
+
+  /* Behind the photo, so it only shows on the foil frame */
+  .album .sticker.shiny::before {
+    z-index: -1;
+    background: var(--shiny-sticker-foil-glint);
+  }
+
+  /* Over the photo */
+  .album .sticker.shiny::after {
+    background: var(--shiny-sticker-glint);
   }
 
   .slot {

@@ -562,6 +562,8 @@
         */
         position: relative;
         overflow: hidden;
+        /* So the foil glint can sit behind the photo but in front of the frame */
+        isolation: isolate;
         border-width: 0;
         padding: 3.5cqi;
         /* Chrome rounds border widths down to whole pixels, so do the same to keep shiny and normal stickers exactly the same size. */
@@ -569,18 +571,29 @@
         background-color: var(--shiny-sticker-color);
         background-image: var(--shiny-sticker-foil);
 
+        &::before,
         &::after {
           content: "";
           position: absolute;
           inset-block: -30%;
           inset-inline-start: 0;
           inline-size: 45%;
-          background: var(--shiny-sticker-glint);
           pointer-events: none;
           transform: translateX(-150%) rotate(20deg);
           animation: var(--shiny-sticker-glint-animation);
           /* Stagger the glint so that shiny stickers in the deck don't all glint at once. */
           animation-delay: var(--glint-delay, 0s);
+        }
+
+        /* Behind the photo, so it only shows on the foil frame */
+        &::before {
+          z-index: -1;
+          background: var(--shiny-sticker-foil-glint);
+        }
+
+        /* Over the photo */
+        &::after {
+          background: var(--shiny-sticker-glint);
         }
       }
 
@@ -677,6 +690,7 @@
       transform: perspective(600px) rotateY(180deg);
 
       /* No need to animate the glint while the front of the sticker is hidden. */
+      & .front.shiny::before,
       & .front.shiny::after {
         animation: none;
       }
