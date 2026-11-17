@@ -78,7 +78,63 @@
     --sticker-back-text-color: hsl(0, 0%, 0%);
 
     --shiny-sticker-color: hsl(0, 0%, 57%);
-    --shiny-sticker-background-color: var(--shiny-sticker-color);
+
+    /*
+      The foil frame of a shiny sticker: brushed silver with a faint
+      holographic tint on top. It is static, so it is only painted once.
+    */
+    --shiny-sticker-foil:
+      linear-gradient(
+        115deg,
+        hsl(330 90% 70% / 0.22),
+        hsl(45 95% 65% / 0.18) 25%,
+        hsl(150 80% 60% / 0.18) 50%,
+        hsl(195 95% 65% / 0.22) 75%,
+        hsl(275 85% 70% / 0.22)),
+      linear-gradient(
+        35deg,
+        hsl(0 0% 52%) 0%,
+        hsl(0 0% 94%) 16%,
+        hsl(0 0% 50%) 34%,
+        hsl(0 0% 80%) 52%,
+        hsl(0 0% 48%) 70%,
+        hsl(0 0% 96%) 86%,
+        hsl(0 0% 58%) 100%);
+
+    /* A soft band of light, with a slight rainbow fringe, that sweeps across shiny stickers. */
+    --shiny-sticker-glint: linear-gradient(
+      90deg,
+      hsl(0 0% 100% / 0) 20%,
+      hsl(190 100% 90% / 0.1) 38%,
+      hsl(0 0% 100% / 0.4) 46%,
+      hsl(0 0% 100% / 0.7) 50%,
+      hsl(0 0% 100% / 0.4) 54%,
+      hsl(320 100% 90% / 0.1) 62%,
+      hsl(0 0% 100% / 0) 80%);
+
+    /*
+      Only `transform` is animated, so the browser can run the animation on the
+      compositor (GPU) without repainting anything or recalculating styles.
+      Animating anything that affects how the sticker is painted (e.g. a gradient
+      angle via a registered custom property) forces a style recalculation and
+      repaint of every shiny sticker on every frame, which crashed Chrome on some
+      low-end Android phones.
+    */
+    --shiny-sticker-glint-animation: shiny-sticker-glint 6s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      --shiny-sticker-glint-animation: none;
+    }
+  }
+
+  /* The glint sweeps across in the first 1.5s, then rests out of view until the next iteration. */
+  @keyframes shiny-sticker-glint {
+    0% {
+      transform: translateX(-150%) rotate(20deg);
+    }
+    25%, 100% {
+      transform: translateX(300%) rotate(20deg);
+    }
   }
 
   html {

@@ -211,7 +211,7 @@
   {#each data.deck as sticker, index (sticker.ownedStickerId)}
     <div class="sticker-wrapper" in:fade={getFadeInParams(index)}>
       <button class="sticker two-sided" class:flipped={flippedStickers.has(sticker.ownedStickerId)} on:click={() => openMenu(sticker)}>
-        <div class="front" class:shiny={sticker.isShiny}>
+        <div class="front" class:shiny={sticker.isShiny} style:--glint-delay="{(index % 4) * 1.5}s">
           <img src={getStickerImageUrl(sticker.title)} alt={sticker.title} />
         </div>
         <div class="back">
@@ -380,23 +380,32 @@
       background: var(--sticker-background-color);
 
       &.shiny {
-        --shiny-sticker-highlight-color: hsl(0, 0%, 80%);
-        --shiny-sticker-border-gradient-angle: 35deg;
+        /*
+          The foil frame is drawn with padding rather than a border (same size),
+          so that `overflow: hidden` clips the glint to the edge of the frame.
+        */
+        position: relative;
+        overflow: hidden;
+        border-width: 0;
+        padding: 3.5cqi;
+        /* Chrome rounds border widths down to whole pixels, so do the same to keep shiny and normal stickers exactly the same size. */
+        padding: round(down, 3.5cqi, 1px);
+        background-color: var(--shiny-sticker-color);
+        background-image: var(--shiny-sticker-foil);
 
-        --shiny-sticker-border-gradient: linear-gradient(
-          var(--shiny-sticker-border-gradient-angle),
-          var(--shiny-sticker-color) 0%,
-          var(--shiny-sticker-color) 10%,
-          var(--shiny-sticker-highlight-color) 33%,
-          var(--shiny-sticker-color) 45%,
-          var(--shiny-sticker-color) 66%,
-          var(--shiny-sticker-highlight-color) 77%,
-          var(--shiny-sticker-color) 90%,
-          var(--shiny-sticker-color) 95%);
-
-        border-image-source: var(--shiny-sticker-border-gradient);
-        border-image-slice: 1;
-        background: var(--shiny-sticker-background-color);
+        &::after {
+          content: "";
+          position: absolute;
+          inset-block: -30%;
+          inset-inline-start: 0;
+          inline-size: 45%;
+          background: var(--shiny-sticker-glint);
+          pointer-events: none;
+          transform: translateX(-150%) rotate(20deg);
+          animation: var(--shiny-sticker-glint-animation);
+          /* Stagger the glint so that shiny stickers in the deck don't all glint at once. */
+          animation-delay: var(--glint-delay, 0s);
+        }
       }
 
       & > img {
@@ -490,6 +499,11 @@
 
     &.flipped {
       transform: perspective(600px) rotateY(180deg);
+
+      /* No need to animate the glint while the front of the sticker is hidden. */
+      & .front.shiny::after {
+        animation: none;
+      }
     }
   }
 </style>
